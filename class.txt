@@ -1,8 +1,0 @@
-1 abbreviation
-2 number
-3 '
-4 writing format
-5 Interjections
-6 date
-7 $,%.etc
-8 hyphen 
