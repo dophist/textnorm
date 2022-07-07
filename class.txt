@@ -5,3 +5,4 @@
 5 Interjections
 6 date
 7 $,%.etc
+8 hyphen 
