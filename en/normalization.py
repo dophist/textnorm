@@ -412,8 +412,8 @@ class accent:
 class sub_word:
     def __init__(self,mode='hold'):
         self.word_list = [('gonna','going to'),('gotta','got to'),('wanna','want to'),('mph','mile per hour')]
-        self.load_d('abbr.txt',mode)
-        self.load_d('subs.txt',mode)
+        self.load_d('data/abbr.txt',mode)
+        self.load_d('data/subs.txt',mode)
         pass
     
     def load_d(self, file, mode = 'hold'):
