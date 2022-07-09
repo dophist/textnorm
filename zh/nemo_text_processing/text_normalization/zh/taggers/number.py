@@ -15,30 +15,40 @@ class NumberFst(GraphFst):
         non_num = (NEMO_CHAR - NEMO_DIGIT) | pynini.accep(' ') 
         digit_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
         zero_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
+        digit_teen_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_teen.tsv")))
+
         digit_z_graph = digit_graph|zero_graph
         digit_null_graph = digit_graph|pynini.cross('0','')
-        single_digit_graph = non_num + digit_graph + non_num
-        teen_num_graph = (non_num + 
-            digit_null_graph  + pynutil.insert(STR_TEEN) + digit_null_graph + non_num
+        digit_teen_graph = digit_teen_graph 
+        u_teen_num_graph = (
+            (digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
+            (zero_graph + digit_graph)
         )
-        hund_num_graph = (non_num +
-            ((digit_graph + pynutil.insert(STR_HUND) + digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
-            (digit_graph + pynutil.insert(STR_HUND) + pynini.cross('0','')**2)|
-            (digit_graph + pynutil.insert(STR_HUND) + zero_graph +  digit_graph))+ non_num
-            
+        teen_num_graph = (
+            (digit_teen_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
+            (zero_graph + digit_graph)
         )
-        thou_num_graph = (non_num + 
-            ((digit_graph + pynutil.insert(STR_THOU) + digit_graph + pynutil.insert(STR_HUND) + digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
-            (digit_graph + pynutil.insert(STR_THOU) + digit_graph + pynutil.insert(STR_HUND) + pynini.cross('0','')**2)|
-            (digit_graph + pynutil.insert(STR_THOU) + digit_graph + pynutil.insert(STR_HUND) + zero_graph + digit_graph)|
+        hund_num_graph = (
+            (digit_graph + pynutil.insert(STR_HUND) + u_teen_num_graph)|
+            (digit_graph + pynutil.insert(STR_HUND) + pynini.cross('0','')**2)
+        )
+        thou_num_graph = (
+            ((digit_graph + pynutil.insert(STR_THOU) + hund_num_graph)|
             (digit_graph + pynutil.insert(STR_THOU) + zero_graph + digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
             (digit_graph + pynutil.insert(STR_THOU) + zero_graph + pynini.cross('0','') + digit_graph)|
             (digit_graph + pynutil.insert(STR_THOU) + pynini.cross('0','')**3))
-            + non_num
         )
-        self.fst = hund_num_graph | thou_num_graph
+        wan_num_graph = (
+            (thou_num_graph|hund_num_graph|teen_num_graph|digit_null_graph) + pynutil.insert(STR_WAN) + (thou_num_graph|
+            (pynini.cross('0','') + pynutil.insert('零') + hund_num_graph)|(pynini.cross('0','')**2 + pynutil.insert('零') + (digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph))|
+            (pynini.cross('0','')**3 + pynutil.insert('零') + digit_graph))
+        )
+        long_num_graph = (
+            pynini.closure(digit_z_graph,9)
+        )
+        graph = hund_num_graph | thou_num_graph | teen_num_graph | digit_z_graph | wan_num_graph | long_num_graph
+        self.fst = non_num + graph + non_num
         self.fst = self.fst.optimize()
-  #     self.fst = None
         
         
         
