@@ -14,7 +14,8 @@
 
 import csv
 import os
-
+import pynini
+from pynini.lib import utf8
 
 def get_abs_path(rel_path):
     """
@@ -58,3 +59,25 @@ def augment_labels_with_punct_at_end(labels):
             if label[0][-1] == "." and label[1][-1] != ".":
                 res.append([label[0], label[1] + "."] + label[2:])
     return res
+
+
+def chr_sep(line):
+    m = '' 
+    for i,chr in enumerate(line):
+        if '\u4e00' <= chr <= '\u9fa5' or '\uff01' <= chr <= '\uff5e':
+            if i+1 < len(line) and ('\u4e00' <= line[i+1] <= '\u9fa5' or '\uff01' <= line[i+1] <= '\uff5e'):
+                m+=' ' + chr
+            else:
+                m+=' ' + chr + ' '
+            
+        else:
+            m+=chr
+    m = ' ' + m + ' '
+    return m
+
+
+def normalize(line,fst):
+    line = chr_sep(line)
+    py = pynini.cdrewrite(fst,'','',pynini.closure(utf8.VALID_UTF8_CHAR))
+    res = (line @ py).string()
+    return res.replace(' ','')
