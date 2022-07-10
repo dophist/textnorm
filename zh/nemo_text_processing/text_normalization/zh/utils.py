@@ -74,10 +74,21 @@ def chr_sep(line):
             m+=chr
     m = ' ' + m + ' '
     return m
-
-
+    
+def pre_process(line):
+    money_list = ['￥','$','USD','€','EUR','￡','J￥','JPY￥','HK$','HKD','AUD','A$','SUR','DEM','DM','FRF','CAD','CAD$','FRF']
+    res = ''
+    for word in line.split():
+        if word[0] in money_list:
+            word = word[1:] + word[0]
+        if '/' in word:
+            items = word.split('/')
+            word = items[1] + '/' + items[0]
+        res += word + ' '
+    return res
+    
 def normalize(line,fst):
     line = chr_sep(line)
-    py = pynini.cdrewrite(fst,'','',pynini.closure(utf8.VALID_UTF8_CHAR))
-    res = (line @ py).string()
+    line = ' ' + pre_process(line)
+    res = (line @ fst).string()
     return res.replace(' ','')
