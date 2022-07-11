@@ -23,6 +23,8 @@ from typing import Dict, List, Union
 
 import pynini
 from joblib import Parallel, delayed
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA
+from nemo_text_processing.text_normalization.zh.utils import chr_sep
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
@@ -33,26 +35,17 @@ from nemo_text_processing.text_normalization.token_parser import PRESERVE_ORDER_
 from pynini.lib.rewrite import top_rewrite
 from tqdm import tqdm
 
-from nemo.collections.common.tokenizers.moses_tokenizers import MosesProcessor
+
+from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
+from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
 
 SPACE_DUP = re.compile(' {2,}')
 
 
 class Normalizer:
     """
-    Normalizer class that converts text from written to spoken form.
-    Useful for TTS preprocessing.
 
-    Args:
-        input_case: expected input capitalization
-        lang: language specifying the TN rules, by default: English
-        cache_dir: path to a dir with .far grammar file. Set to None to avoid using cache.
-        overwrite_cache: set to True to overwrite .far files
-        whitelist: path to a file with whitelist replacements
-        post_process: WFST-based post processing, e.g. to remove extra spaces added during TN.
-            Note: punct_post_process flag in normalize() supports all languages.
     """
-
     def __init__(
         self,
         input_case: str,
@@ -68,37 +61,10 @@ class Normalizer:
 
         self.post_processor = None
 
-        if lang == "en":
-            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
-            from nemo_text_processing.text_normalization.en.verbalizers.post_processing import PostProcessingFst
-
-            if post_process:
-                self.post_processor = PostProcessingFst(cache_dir=cache_dir, overwrite_cache=overwrite_cache)
-
-            if deterministic:
-                from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import ClassifyFst
-            else:
-                if lm:
-                    from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify_lm import ClassifyFst
-                else:
-                    from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify_with_audio import (
-                        ClassifyFst,
-                    )
-
-        elif lang == 'ru':
-            # Ru TN only support non-deterministic cases and produces multiple normalization options
-            # use normalize_with_audio.py
-            from nemo_text_processing.text_normalization.ru.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.ru.verbalizers.verbalize_final import VerbalizeFinalFst
-        elif lang == 'de':
-            from nemo_text_processing.text_normalization.de.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.de.verbalizers.verbalize_final import VerbalizeFinalFst
-        elif lang == 'es':
-            from nemo_text_processing.text_normalization.es.taggers.tokenize_and_classify import ClassifyFst
-            from nemo_text_processing.text_normalization.es.verbalizers.verbalize_final import VerbalizeFinalFst
-        if lang == "zh":
-            from nemo_text_processing.text_normalization.en.verbalizers.verbalize_final import VerbalizeFinalFst
-            from nemo_text_processing.text_normalization.en.taggers.tokenize_and_classify import ClassifyFst
+        
+        # if lang == "zh":
+        #     from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
+        #     from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
         self.tagger = ClassifyFst(
             input_case=input_case,
             deterministic=deterministic,
@@ -106,15 +72,15 @@ class Normalizer:
             overwrite_cache=overwrite_cache,
             whitelist=whitelist,
         )
+        self.tagger.fst = pynini.cdrewrite(self.tagger.fst,'','',NEMO_SIGMA)
 
         self.verbalizer = VerbalizeFinalFst(
             deterministic=deterministic, cache_dir=cache_dir, overwrite_cache=overwrite_cache
         )
-
+        self.verbalizer.fst = pynini.cdrewrite(self.verbalizer.fst,'','',NEMO_SIGMA)
         self.parser = TokenParser()
         self.lang = lang
 
-        self.processor = MosesProcessor(lang_id=lang)
 
     def normalize_list(
         self,
@@ -261,7 +227,7 @@ class Normalizer:
         original_text = text
         if punct_pre_process:
             text = pre_process(text)
-        text = text.strip()
+        #text = text.strip()
         if not text:
             if verbose:
                 print(text)
@@ -269,37 +235,10 @@ class Normalizer:
         text = pynini.escape(text)
         tagged_lattice = self.find_tags(text)
         tagged_text = self.select_tag(tagged_lattice)
-        if verbose:
-            print(tagged_text)
-        self.parser(tagged_text)
-        tokens = self.parser.parse()
-        split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
-        output = ""
-        for s in split_tokens:
-            tags_reordered = self.generate_permutations(s)
-            verbalizer_lattice = None
-            for tagged_text in tags_reordered:
-                tagged_text = pynini.escape(tagged_text)
-
-                verbalizer_lattice = self.find_verbalizer(tagged_text)
-                if verbalizer_lattice.num_states() != 0:
-                    break
-            if verbalizer_lattice is None:
-                raise ValueError(f"No permutations were generated from tokens {s}")
-            output += ' ' + self.select_verbalizer(verbalizer_lattice)
-        output = SPACE_DUP.sub(' ', output[1:])
-
-        if self.lang == "en" and hasattr(self, 'post_processor'):
-            output = self.post_process(output)
-
-        if punct_post_process:
-            # do post-processing based on Moses detokenizer
-            if self.processor:
-                output = self.processor.moses_detokenizer.detokenize([output], unescape=False)
-                output = post_process_punct(input=original_text, normalized_text=output)
-            else:
-                print("NEMO_NLP collection is not available: skipping punctuation post_processing")
-
+        print(tagged_text)
+        verbalizer_lattice = self.find_verbalizer(tagged_text)
+        verbalizer_lattice = pynini.shortestpath(verbalizer_lattice)
+        output = verbalizer_lattice.string()
         return output
 
     def _permute(self, d: OrderedDict) -> List[str]:
@@ -371,6 +310,7 @@ class Normalizer:
         Returns: tagged lattice
         """
         lattice = text @ self.tagger.fst
+
         return lattice
 
     def select_tag(self, lattice: 'pynini.FstLike') -> str:
@@ -426,8 +366,6 @@ class Normalizer:
             return normalized_text
         normalized_text = pynini.escape(normalized_text)
 
-        if self.post_processor is not None:
-            normalized_text = top_rewrite(normalized_text, self.post_processor.fst)
         return normalized_text
 
 
@@ -477,10 +415,12 @@ if __name__ == "__main__":
         whitelist=whitelist,
         lang=args.language,
     )
+    text = chr_sep('我2012年出生的')
+    print(text)
     if args.input_string:
         print(
             normalizer.normalize(
-                args.input_string,
+                text,
                 verbose=args.verbose,
                 punct_pre_process=args.punct_pre_process,
                 punct_post_process=args.punct_post_process,
