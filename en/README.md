@@ -1,12 +1,7 @@
-### data.tsv
+### pairs.tsv
 typical TN cases (text ~ text_tn pair)
 
-### normalization.py
-TN aid code
-
-### assets
-runtime resources for text norm modules:
-
+### data/ runtime resources
 * abbr.txt: abbreviation list
 * subs.txt: substitution list
 
