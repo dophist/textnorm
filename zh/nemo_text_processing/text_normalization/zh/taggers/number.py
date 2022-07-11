@@ -19,8 +19,8 @@ class NumberFst(GraphFst):
         digit_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
         zero_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
         digit_teen_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_teen.tsv")))
-        num_wl_graph = pynini.string_file(get_abs_path("data/number/whitelist.tsv"))
-        num_graph = pynini.string_file(get_abs_path("data/number/number.tsv"))
+        # num_wl_graph = pynini.string_file(get_abs_path("data/number/whitelist.tsv"))
+        # num_graph = pynini.string_file(get_abs_path("data/number/number.tsv"))
         digit_z_graph = digit_graph|zero_graph
         digit_null_graph = digit_graph|pynini.cross('0','')
         digit_teen_graph = digit_teen_graph 
@@ -40,7 +40,7 @@ class NumberFst(GraphFst):
             ((digit_graph + pynutil.insert(STR_THOU) + hund_num_graph)|
             (digit_graph + pynutil.insert(STR_THOU) + zero_graph + digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
             (digit_graph + pynutil.insert(STR_THOU) + zero_graph + pynini.cross('0','') + digit_graph)|
-            (digit_graph + pynutil.insert(STR_THOU) + pynini.cross('0','')**3))
+            (digit_graph + pynutil.insert(STR_THOU) + pynini.cross('0','')**3)) 
         )
         wan_num_graph = (
             (thou_num_graph|hund_num_graph|teen_num_graph|digit_null_graph) + pynutil.insert(STR_WAN) + (thou_num_graph|

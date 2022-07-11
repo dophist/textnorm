@@ -10,7 +10,7 @@ class MoneyFst(GraphFst):
         ￥1.25 --> 一点二五元
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="number", kind="classify", deterministic=deterministic)
+        super().__init__(name="money", kind="classify", deterministic=deterministic)
         currency_graph = pynini.invert(pynini.string_file(get_abs_path("data/money/currency.tsv")))
         digit_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
         self.fst = ' ' + NumberFst().final_graph + currency_graph
