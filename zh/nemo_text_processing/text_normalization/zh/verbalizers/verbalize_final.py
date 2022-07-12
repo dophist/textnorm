@@ -10,7 +10,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
 from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst
 from pynini.lib import pynutil
 
-from nemo.utils import logging
+# from nemo.utils import logging
 
 
 class VerbalizeFinalFst(GraphFst):
@@ -36,4 +36,4 @@ class VerbalizeFinalFst(GraphFst):
 
 
         graph = delete_space + pynini.closure(graph + delete_extra_space) + graph + delete_space
-        self.fst = verbalize.optimize()
+        self.fst = graph.optimize()

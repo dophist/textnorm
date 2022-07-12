@@ -65,30 +65,21 @@ def chr_sep(line):
     m = '' 
     for i,chr in enumerate(line):
         if '\u4e00' <= chr <= '\u9fa5' or '\uff01' <= chr <= '\uff5e':
-            if i+1 < len(line) and ('\u4e00' <= line[i+1] <= '\u9fa5' or '\uff01' <= line[i+1] <= '\uff5e'):
+            if i+1 < len(line) and ('\u4e00' <= line[i+1] <= '\u9fa5' or '\uff01' <= line[i+1] <= '\uff5e') and i !=0:
                 m+=' ' + chr
             else:
                 m+=' ' + chr + ' '
             
         else:
             m+=chr
-    m = ' ' + m + ' '
     return m
-    
-def pre_process(line):
-    money_list = ['￥','$','USD','€','EUR','￡','J￥','JPY￥','HK$','HKD','AUD','A$','SUR','DEM','DM','FRF','CAD','CAD$','FRF']
-    res = ''
-    for word in line.split():
-        if word[0] in money_list:
-            word = word[1:] + word[0]
-        if '/' in word:
-            items = word.split('/')
-            word = items[1] + '/' + items[0]
-        res += word + ' '
-    return res
-    
-def normalize(line,fst):
-    line = chr_sep(line)
-    line = ' ' + pre_process(line)
-    res = (line @ fst).string()
-    return res.replace(' ','')
+
+def inverse_chr_sep(line):
+    m = ''
+    for i,chr in enumerate(line):
+        if chr != " ":
+            m+=chr
+    return m
+
+
+

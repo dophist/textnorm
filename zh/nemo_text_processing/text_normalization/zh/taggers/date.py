@@ -10,7 +10,7 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="classify", deterministic=deterministic)
         digit_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
         zero_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
-        year_graph = (digit_graph|zero_graph).closure() + " 年"
+        year_graph = pynini.closure(digit_graph|zero_graph,4,4)+ " 年"
         date_graph = pynutil.insert("year: \"") + year_graph + pynutil.insert(" \"")
         date_graph = self.add_tokens(date_graph)
         self.fst = date_graph.optimize()

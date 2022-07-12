@@ -55,13 +55,15 @@ class NumberFst(GraphFst):
         dem_num_graph = (
             graph + pynini.cross('.','点') + pynini.closure(digit_z_graph,1) 
         ).optimize()
-        frac_num_graph = (
-            graph + pynini.cross('/','分之') + graph
-        ).optimize()
-        final_graph = graph | dem_num_graph | frac_num_graph
+        # frac_num_graph = (
+        #     graph + pynini.cross('/','分之') + graph
+        # ).optimize()
+        final_graph = graph | dem_num_graph
         self.final_graph = final_graph.optimize()
-        self.fst = ' ' + final_graph + ' '
-        self.fst = self.fst.optimize()
+        num_graph = pynutil.insert("number: \"") + final_graph + pynutil.insert(" \"")
+
+        num_graph = self.add_tokens(num_graph)
+        self.fst = num_graph.optimize()
         
         
         
