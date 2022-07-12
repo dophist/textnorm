@@ -1,0 +1,7 @@
+date	case	log	res	accuracy
+2022/7/12	nemo	none	93/319	0.2915
+2022/7/12	nemo_lower	add_interjection	111/319	0.3479
+2022/7/12	nemo_lower	add_accent	133/319	0.4169
+2022/7/12	nemo_lower	accent white-list	139/319	0.4169
+2022/7/12	nemo		123/319	0.3868
+2022/7/12	nemo	fix some pairs 	168/316	0.5316
