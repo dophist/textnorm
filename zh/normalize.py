@@ -24,7 +24,7 @@ from typing import Dict, List, Union
 import pynini
 from joblib import Parallel, delayed
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA
-from nemo_text_processing.text_normalization.zh.utils import chr_sep
+from nemo_text_processing.text_normalization.zh.utils import chr_sep,inverse_chr_sep
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
@@ -61,7 +61,7 @@ class Normalizer:
 
         self.post_processor = None
 
-        
+                
         # if lang == "zh":
         #     from nemo_text_processing.text_normalization.zh.verbalizers.verbalize_final import VerbalizeFinalFst
         #     from nemo_text_processing.text_normalization.zh.taggers.tokenize_and_classify import ClassifyFst
@@ -77,7 +77,7 @@ class Normalizer:
         self.verbalizer = VerbalizeFinalFst(
             deterministic=deterministic, cache_dir=cache_dir, overwrite_cache=overwrite_cache
         )
-        self.verbalizer.fst = pynini.cdrewrite(self.verbalizer.fst,'','',NEMO_SIGMA)
+        # self.verbalizer.fst = pynini.cdrewrite(self.verbalizer.fst,'','',NEMO_SIGMA)
         self.parser = TokenParser()
         self.lang = lang
 
@@ -223,7 +223,7 @@ class Normalizer:
         assert (
             len(text.split()) < 500
         ), "Your input is too long. Please split up the input into sentences, or strings with fewer than 500 words"
-
+        text = chr_sep(text)
         original_text = text
         if punct_pre_process:
             text = pre_process(text)
@@ -235,10 +235,28 @@ class Normalizer:
         text = pynini.escape(text)
         tagged_lattice = self.find_tags(text)
         tagged_text = self.select_tag(tagged_lattice)
-        print(tagged_text)
-        verbalizer_lattice = self.find_verbalizer(tagged_text)
-        verbalizer_lattice = pynini.shortestpath(verbalizer_lattice)
-        output = verbalizer_lattice.string()
+        # print(tagged_text)
+        self.parser(tagged_text)
+        tokens = self.parser.parse()
+        split_tokens = self._split_tokens_to_reduce_number_of_permutations(tokens)
+        output = ""
+        for s in split_tokens:
+            tags_reordered = self.generate_permutations(s)
+            verbalizer_lattice = None
+            for tagged_text in tags_reordered:
+                tagged_text = pynini.escape(tagged_text)
+                verbalizer_lattice = self.find_verbalizer(tagged_text)
+                if verbalizer_lattice.num_states() != 0:
+                    break
+            if verbalizer_lattice is None:
+                raise ValueError(f"No permutations were generated from tokens {s}")
+            output += ' ' + self.select_verbalizer(verbalizer_lattice)
+
+        output = SPACE_DUP.sub(' ', output[1:])
+        output = inverse_chr_sep(output)
+        # verbalizer_lattice = self.find_verbalizer(tagged_text)
+        # verbalizer_lattice = pynini.shortestpath(verbalizer_lattice)
+        # output = verbalizer_lattice.string()
         return output
 
     def _permute(self, d: OrderedDict) -> List[str]:
@@ -251,10 +269,12 @@ class Normalizer:
         Return permutations of different string serializations of key value pairs
         """
         l = []
+        
         if PRESERVE_ORDER_KEY in d.keys():
             d_permutations = [d.items()]
         else:
             d_permutations = itertools.permutations(d.items())
+        
         for perm in d_permutations:
             subl = [""]
             for k, v in perm:
@@ -415,9 +435,10 @@ if __name__ == "__main__":
         whitelist=whitelist,
         lang=args.language,
     )
-    text = chr_sep('我2012年出生的')
+    text = '$1.26'
     print(text)
     if args.input_string:
+        pass
         print(
             normalizer.normalize(
                 text,
