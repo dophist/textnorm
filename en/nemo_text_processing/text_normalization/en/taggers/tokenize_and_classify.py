@@ -190,15 +190,14 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(electonic_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(range_graph, 1.1)
-                | pynutil.add_weight(serial_graph, 1.1001)
+                | pynutil.add_weight(serial_graph, 1.102)# should be higher than the rest of the classes
                 | pynutil.add_weight(inter_graph, 1.101) 
-                | pynutil.add_weight(acc_graph, 1.1)  # should be higher than the rest of the classes
+                | pynutil.add_weight(acc_graph, 1.1)  
                 | pynutil.add_weight(subs_graph, 1.1)
             )
 
             roman_graph = RomanFst(deterministic=deterministic).fst
             classify |= pynutil.add_weight(roman_graph, 1.1)
-
             if not deterministic:
                 abbreviation_graph = AbbreviationFst(deterministic=deterministic).fst
                 classify |= pynutil.add_weight(abbreviation_graph, 100)

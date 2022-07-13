@@ -58,7 +58,7 @@ class WhiteListFst(GraphFst):
                 whitelist = [[x, y] for x, y in whitelist]
             if keep_punct_add_end:
                 whitelist.extend(augment_labels_with_punct_at_end(whitelist))
-
+                
             graph = pynini.string_map(whitelist)
             return graph
 
