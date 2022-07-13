@@ -223,11 +223,12 @@ class Normalizer:
         assert (
             len(text.split()) < 500
         ), "Your input is too long. Please split up the input into sentences, or strings with fewer than 500 words"
-        text = chr_sep(text)
+        # text = '，2023'
+        # text = chr_sep(text)
         original_text = text
         if punct_pre_process:
             text = pre_process(text)
-        #text = text.strip()
+        text = text.strip()
         if not text:
             if verbose:
                 print(text)
@@ -254,9 +255,6 @@ class Normalizer:
 
         output = SPACE_DUP.sub(' ', output[1:])
         output = inverse_chr_sep(output)
-        # verbalizer_lattice = self.find_verbalizer(tagged_text)
-        # verbalizer_lattice = pynini.shortestpath(verbalizer_lattice)
-        # output = verbalizer_lattice.string()
         return output
 
     def _permute(self, d: OrderedDict) -> List[str]:
@@ -435,10 +433,8 @@ if __name__ == "__main__":
         whitelist=whitelist,
         lang=args.language,
     )
-    text = '$1.26'
-    print(text)
+    text = ""
     if args.input_string:
-        pass
         print(
             normalizer.normalize(
                 text,
