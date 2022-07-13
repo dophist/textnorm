@@ -85,7 +85,7 @@ A.D	AD
 a. d	AD
 a.d	AD
 a. d.	AD
-a.d.	AD
+A.D.	AD
 B. C	BC
 B.C	BC
 b. c	BC
@@ -138,6 +138,8 @@ AC&W	AC and W
 Acy	ACY
 A&D	A and D
 Adab	ADAB
+a d	AD
+A D	AD
 A. D.	AD
 A.D.	AD
 A.D.A.M.	adam
@@ -221,6 +223,7 @@ aht	AHT
 Ahu	AHU
 Ahva	AHVA
 A&I	A and I
+A I	AI
 A. I.	AI
 A.I.	AI
 Aias	AIA's
@@ -495,6 +498,7 @@ BBSes	BBSE's
 BB&T	BB and T
 BbvCI	BBVCI
 bc	BC
+B C	BC
 B. C.	BC
 B.C.	BC
 Bcci	BCCI
@@ -1030,6 +1034,8 @@ DProf	DPROF
 DPs	DP's
 D.Q.	DQ
 drc	DRC
+dr.	doctor
+DR.	doctor
 Dr.	doctor
 D. R.	DR
 D.R.	DR
@@ -2213,6 +2219,7 @@ kyt	KYT
 Kyt	KYT
 kz	KZ
 K. Z.	KZ
+L A	LA
 L. A.	LA
 L.A.'s	LA's
 Lay's	LAY's
@@ -2427,11 +2434,16 @@ Mra	MRA
 MRBs	MRB's
 mre	MRE
 MR&LE	MR and LE
+mr.	mister
+MR.	mister
 Mr.	mister
 M. R.	MR
 M.R.	MR
 mRNA	MRNA
 mRNAs	MRNA's
+MRS.	misses
+mrs.	misses
+missus	misses
 Mrs.	misses
 MRTs	MRT's
 msd	MSD
@@ -2712,7 +2724,6 @@ P. L.	PL
 P.L.	PL
 PMMoV	PMMOV
 p.m.	PM
-p.m	PM
 P. M.	PM
 P.M.	PM
 PMs	PM's
@@ -3285,6 +3296,7 @@ tvaan	TVAAN
 Tvam	TVAM
 tva	TVA
 TVETs	TVET's
+T V	TV
 TVii	TVII
 TVIn	TVIN
 TVi	TVI
