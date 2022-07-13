@@ -6,6 +6,9 @@ from nemo_text_processing.text_normalization.zh.verbalizers.fraction import Frac
 from nemo_text_processing.text_normalization.zh.verbalizers.percent import PercentFst
 from nemo_text_processing.text_normalization.zh.verbalizers.sign import SignFst
 from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
+from nemo_text_processing.text_normalization.zh.verbalizers.quantity import QuantityFst
+from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
+from nemo_text_processing.text_normalization.zh.verbalizers.erhua import ErhuaFst
 class VerbalizeFst(GraphFst):
     """
     Composes other verbalizer grammars.
@@ -32,6 +35,12 @@ class VerbalizeFst(GraphFst):
         sign_graph = sign.fst
         money = MoneyFst(deterministic=deterministic)
         money_graph = money.fst
+        quantity = QuantityFst(deterministic=deterministic)
+        quantity_graph = quantity.fst
+        time = TimeFst(deterministic=deterministic)
+        time_graph = time.fst
+        erhua = ErhuaFst(deterministic=deterministic)
+        erhua_graph = erhua.fst
         graph = ( 
         	date_graph
             |number_graph
@@ -40,5 +49,8 @@ class VerbalizeFst(GraphFst):
             |sign_graph
             |percent_graph
             |money_graph
+            |quantity_graph
+            |time_graph
+            |erhua_graph
         )
         self.fst = graph

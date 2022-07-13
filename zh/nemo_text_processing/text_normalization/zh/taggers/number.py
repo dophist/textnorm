@@ -42,22 +42,36 @@ class NumberFst(GraphFst):
             (digit_graph + pynutil.insert(STR_THOU) + zero_graph + pynini.cross('0','') + digit_graph)|
             (digit_graph + pynutil.insert(STR_THOU) + pynini.cross('0','')**3)) 
         )
+        thou_num_graph_sign =(
+            ((digit_graph + pynutil.insert(STR_THOU) + (pynutil.delete(",")|pynutil.delete("，")) + hund_num_graph)|
+            (digit_graph + pynutil.insert(STR_THOU) + (pynutil.delete(",")|pynutil.delete("，")) + zero_graph + digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
+            (digit_graph + pynutil.insert(STR_THOU) + (pynutil.delete(",")|pynutil.delete("，")) + zero_graph + pynini.cross('0','') + digit_graph)|
+            (digit_graph + pynutil.insert(STR_THOU) + (pynutil.delete(",")|pynutil.delete("，")) + pynini.cross('0','')**3)) 
+        )
         wan_num_graph = (
             (thou_num_graph|hund_num_graph|teen_num_graph|digit_null_graph) + pynutil.insert(STR_WAN) + (thou_num_graph|
             (pynini.cross('0','') + pynutil.insert('零') + hund_num_graph)|(pynini.cross('0','')**2 + pynutil.insert('零') + (digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph))|
             (pynini.cross('0','')**3 + pynutil.insert('零') + digit_graph)|(pynini.cross('0','')**4))
+        )
+        wan_num_graph_sign = (
+            (thou_num_graph|hund_num_graph|teen_num_graph|digit_null_graph) + \
+            pynutil.insert(STR_WAN) + (thou_num_graph_sign|
+            (pynini.cross('0','') + (pynutil.delete(",")|pynutil.delete("，")) + pynutil.insert('零') + \
+            hund_num_graph)|(pynini.cross('0','') + (pynutil.delete(",")|pynutil.delete("，")) + pynini.cross('0','') + \
+            pynutil.insert('零') + (digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph))|
+            (pynini.cross('0','') + (pynutil.delete(",")|pynutil.delete("，")) + pynini.cross('0','')**2 + pynutil.insert('零') + digit_graph)|(pynini.cross('0','')**4))
         )
         long_num_graph = (
             pynini.closure(digit_z_graph,9)
         )
         
         graph = hund_num_graph | thou_num_graph | teen_num_graph | digit_z_graph | wan_num_graph | long_num_graph
+        graph |=thou_num_graph_sign
+        graph |= wan_num_graph_sign
+
         dem_num_graph = (
             graph + pynini.cross('.','点') + pynini.closure(digit_z_graph,1) 
         ).optimize()
-        # frac_num_graph = (
-        #     graph + pynini.cross('/','分之') + graph
-        # ).optimize()
         final_graph = graph | dem_num_graph
         self.final_graph = final_graph.optimize()
         num_graph = pynutil.insert("number: \"") + final_graph + pynutil.insert(" \"")

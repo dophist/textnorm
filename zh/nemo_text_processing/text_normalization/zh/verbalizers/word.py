@@ -8,5 +8,7 @@ class WordFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="word", kind="verbalize", deterministic=deterministic)
         word = pynutil.delete("word: \"") + NEMO_NOT_SPACE + pynutil.delete("\"")
+        er = pynutil.delete("er_word: \"") + pynutil.delete("儿") + pynutil.delete("\"")
+        word|=er
         word = self.delete_tokens(word)
         self.fst = word.optimize()

@@ -16,6 +16,9 @@ from nemo_text_processing.text_normalization.zh.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.zh.taggers.percent import PercentFst
 from nemo_text_processing.text_normalization.zh.taggers.sign import SignFst
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
+from nemo_text_processing.text_normalization.zh.taggers.quantity import QuantityFst
+from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
+from nemo_text_processing.text_normalization.zh.taggers.erhua import ErhuaFst
 from pynini.lib import pynutil
 
 # from nemo.utils import logging
@@ -74,15 +77,24 @@ class ClassifyFst(GraphFst):
             sign_graph = sign.fst
             money = MoneyFst(deterministic=deterministic)
             money_graph = money.fst
+            quantity = QuantityFst(deterministic=deterministic)
+            quantity_graph = quantity.fst
+            Time = TimeFst(deterministic=deterministic)
+            time_graph = Time.fst
+            erhua = ErhuaFst(deterministic=deterministic)
+            erhua_graph = erhua.fst
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
 
             classify = (
-                pynutil.add_weight(date_graph, 0.8)               
+                pynutil.add_weight(date_graph, 0.4)               
                 |pynutil.add_weight(fraction_graph,0.5)
                 |pynutil.add_weight(percent_graph,0.5)
                 |pynutil.add_weight(money_graph,0.5)
+                |pynutil.add_weight(quantity_graph,0.5)
+                |pynutil.add_weight(time_graph,0.5)
                 |pynutil.add_weight(number_graph, 1.2)
                 |pynutil.add_weight(sign_graph, 1.5)
+                |pynutil.add_weight(erhua_graph, 2.0)
                 |pynutil.add_weight(word_graph, 200)
 
             )
