@@ -5,3 +5,7 @@ date	case	log	res	accuracy
 2022/7/12	nemo_lower	accent white-list	139/319	0.4169
 2022/7/12	nemo		123/319	0.3868
 2022/7/12	nemo	fix some pairs 	168/316	0.5316
+2022/7/13	nemo	fix some pairs and delete name case in subs pair	173/338	0.5118
+2022/7/13	nemo	expand whitelist	195/338	0.5769
+2022/7/13	nemo	fix year num	218/337	0.6469
+2022/7/13	nemo	fix pairs completely add some case	251/327	0.7676
