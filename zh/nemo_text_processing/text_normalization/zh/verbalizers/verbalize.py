@@ -9,6 +9,8 @@ from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFs
 from nemo_text_processing.text_normalization.zh.verbalizers.quantity import QuantityFst
 from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.verbalizers.erhua import ErhuaFst
+from nemo_text_processing.text_normalization.zh.verbalizers.qj2bj import Qj2bjFst
+from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import WhitelistFst
 class VerbalizeFst(GraphFst):
     """
     Composes other verbalizer grammars.
@@ -41,6 +43,10 @@ class VerbalizeFst(GraphFst):
         time_graph = time.fst
         erhua = ErhuaFst(deterministic=deterministic)
         erhua_graph = erhua.fst
+        qj2bj = Qj2bjFst(deterministic=deterministic)
+        qj2bj_graph = qj2bj.fst
+        whitelist = WhitelistFst(deterministic=deterministic)
+        whitelist_graph = whitelist.fst
         graph = ( 
         	date_graph
             |number_graph
@@ -52,5 +58,7 @@ class VerbalizeFst(GraphFst):
             |quantity_graph
             |time_graph
             |erhua_graph
+            |qj2bj_graph
+            |whitelist_graph
         )
         self.fst = graph

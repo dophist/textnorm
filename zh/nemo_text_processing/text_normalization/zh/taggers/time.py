@@ -10,9 +10,9 @@ class TimeFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
-        clock_hour = pynini.closure(NEMO_DIGIT,1) + (pynutil.delete(':')|pynutil.delete('-'))
+        clock_hour = pynini.closure(NEMO_DIGIT,1) + pynutil.delete(':')
         clock_min = pynini.closure(NEMO_DIGIT,2,2)
-        clock_min_with_sec = pynini.closure(NEMO_DIGIT,2,2) +  (pynutil.delete(':')|pynutil.delete('-'))
+        clock_min_with_sec = pynini.closure(NEMO_DIGIT,2,2) +  pynutil.delete(':')
         clock_second = pynini.closure(NEMO_DIGIT,1,2)
         clock_no_sec_graph = pynutil.insert("hour: \"") + clock_hour + pynutil.insert("\"")\
         + insert_space + pynutil.insert("min: \"") + clock_min + pynutil.insert("\"")

@@ -19,6 +19,8 @@ from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.taggers.quantity import QuantityFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.taggers.erhua import ErhuaFst
+from nemo_text_processing.text_normalization.zh.taggers.qj2bj import Qj2bjFst
+from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhitelistFst
 from pynini.lib import pynutil
 
 # from nemo.utils import logging
@@ -83,6 +85,10 @@ class ClassifyFst(GraphFst):
             time_graph = Time.fst
             erhua = ErhuaFst(deterministic=deterministic)
             erhua_graph = erhua.fst
+            qj2bj = Qj2bjFst(deterministic=deterministic)
+            qj2bj_graph = qj2bj.fst
+            whitelist = WhitelistFst(deterministic=deterministic)
+            whitelist_graph = whitelist.fst
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
 
             classify = (
@@ -92,8 +98,10 @@ class ClassifyFst(GraphFst):
                 |pynutil.add_weight(money_graph,0.5)
                 |pynutil.add_weight(quantity_graph,0.5)
                 |pynutil.add_weight(time_graph,0.5)
+                |pynutil.add_weight(whitelist_graph,0.3)
                 |pynutil.add_weight(number_graph, 1.2)
                 |pynutil.add_weight(sign_graph, 1.5)
+                |pynutil.add_weight(qj2bj_graph, 2.0)
                 |pynutil.add_weight(erhua_graph, 2.0)
                 |pynutil.add_weight(word_graph, 200)
 
