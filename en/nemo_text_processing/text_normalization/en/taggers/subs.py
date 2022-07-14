@@ -19,13 +19,11 @@ class SubstituteFst(GraphFst):
         word_graph = pynini.string_file(
             get_abs_path("data/substitute/word.tsv")
         )
-        abbr_graph = pynini.string_file(
-            get_abs_path("data/substitute/abbr.tsv")
-        )
         year_graph = pynini.string_file(
             get_abs_path("data/substitute/numbers.tsv")
         )
-        subs_graph =  word_graph | abbr_graph | year_graph
+        word_past = word_graph + 'ed'
+        subs_graph =  word_graph | year_graph | word_past
         graph = pynutil.insert("word: \"") + subs_graph + pynutil.insert("\"")
         graph = self.add_tokens(graph)
         self.fst = graph.optimize()

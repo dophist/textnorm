@@ -43,6 +43,7 @@ from nemo_text_processing.text_normalization.en.taggers.word import WordFst
 from nemo_text_processing.text_normalization.en.taggers.interjection import InterjectionFst
 from nemo_text_processing.text_normalization.en.taggers.accent import AccentFst
 from nemo_text_processing.text_normalization.en.taggers.subs import SubstituteFst
+from nemo_text_processing.text_normalization.en.taggers.symbol import SymbolFst
 from nemo_text_processing.text_normalization.en.verbalizers.date import DateFst as vDateFst
 from nemo_text_processing.text_normalization.en.verbalizers.ordinal import OrdinalFst as vOrdinalFst
 from nemo_text_processing.text_normalization.en.verbalizers.time import TimeFst as vTimeFst
@@ -158,12 +159,16 @@ class ClassifyFst(GraphFst):
             inter_graph = InterjectionFst(deterministic=deterministic).fst
             logging.debug(f"serial: {time.time() - start_time: .2f}s -- {serial_graph.num_states()} nodes")
 
-            tart_time = time.time()
+            start_time = time.time()
             acc_graph = AccentFst(deterministic=deterministic).fst
             logging.debug(f"serial: {time.time() - start_time: .2f}s -- {serial_graph.num_states()} nodes")
 
-            tart_time = time.time()
+            start_time = time.time()
             subs_graph = SubstituteFst(deterministic=deterministic).fst
+            logging.debug(f"serial: {time.time() - start_time: .2f}s -- {serial_graph.num_states()} nodes")
+
+            start_time = time.time()
+            symbol_graph = SymbolFst(deterministic=deterministic).fst
             logging.debug(f"serial: {time.time() - start_time: .2f}s -- {serial_graph.num_states()} nodes")
 
             start_time = time.time()
@@ -194,6 +199,7 @@ class ClassifyFst(GraphFst):
                 | pynutil.add_weight(inter_graph, 1.101) 
                 | pynutil.add_weight(acc_graph, 1.1)  
                 | pynutil.add_weight(subs_graph, 1.1)
+                | pynutil.add_weight(symbol_graph, 1.1)
             )
 
             roman_graph = RomanFst(deterministic=deterministic).fst
