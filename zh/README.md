@@ -28,6 +28,8 @@
 
 ## structure
 data/
+|      tsv file             |      role                             |
+|:--------------------------:|:------------------------------------:|
 |./measure/measure.tsv      |Common unit symbols in Chinese format  |
 |./measure/measure_zh.tsv   |Commonly used Chinese character units  |
 |./erhua/erhua.tsv  	     |      Whitelist to remove paedophones  |
