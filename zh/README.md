@@ -47,7 +47,10 @@
 
 ### Measure
 ```
-
+重达25kg -> 二十五千克
+最高气温38°C -> 最高气温三十八摄氏度
+实际面积120m² -> 实际面积一百二十平方米
+渲染速度10ms一帧 -> 渲染速度十毫秒一帧
 ```
 
 ### Number series (phone, mobile numbers)
@@ -71,7 +74,7 @@ B2B -> B to B
 
 ### Fullwidth -> Halfwidth char conversion
 ```
-
+苹果ＣＥＯ宣布发布新ＩＰＨＯＮＥ -> 苹果CEO宣布发布新IPHONE
 ```
 
 ### Charset Checker: if enabled, non-standard chars will be tagged with '<>'
@@ -108,8 +111,7 @@ B2B -> B to B
 
 
 ## Knowledge Resources (data/*)
-### *national_standard_2013_mandarin_charset_8105.tsv*
-2013 national standard, officially standardizing 8105 most common chars in Chinese [wiki-通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
+* national_standard_2013_mandarin_charset_8105.tsv: national standardized Chinese charset [wiki-通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
 
 * currency.tsv: containing common currency signs
 	```
