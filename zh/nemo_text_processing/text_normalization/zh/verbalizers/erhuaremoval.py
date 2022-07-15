@@ -1,7 +1,7 @@
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst,NEMO_NOT_QUOTE
 from pynini.lib import pynutil
-class ErhuaFst(GraphFst):
+class ErhuaRemovalFst(GraphFst):
     '''
         儿女
     '''

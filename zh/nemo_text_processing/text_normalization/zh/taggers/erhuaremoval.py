@@ -2,7 +2,7 @@ import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst,NEMO_NOT_SPACE
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path,load_labels
-class ErhuaFst(GraphFst):
+class ErhuaRemovalFst(GraphFst):
     '''
         女儿  -  女儿
         这儿  - 这

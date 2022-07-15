@@ -3,28 +3,32 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, N
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 class DateFst(GraphFst):
+    '''
+        date { year: "2002" month: "01" day: "28"}  ->  二零零二年一月二十八日
+        date { year: "2002" }                       ->  二零零八年
+    '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
-        date = pynutil.delete('year: \"') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete(' \"') 
-        digit_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
-        digit_teen_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_teen.tsv")))
-        zero = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
-        zero_graph = pynini.cross("0","")
-        year_graph = pynini.closure(digit_graph|zero,2,4)
-        STR_TEEN = '十'
-        digit_null_graph = digit_graph|zero_graph
-        time_number_graph = (
-             (digit_teen_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
-            (zero_graph + digit_graph)
+        NEMO_TEN = '十'
+        date_type0 = pynutil.delete('year: \"') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('\"') 
+        graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
+        graph_ten = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_teen.tsv")))
+        graph_zero = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
+        graph_no_zero = pynini.cross("0","")
+        graph_year = pynini.closure(graph_digit|graph_zero,2,4)
+        graph_digit_no_zero = graph_digit|graph_no_zero
+        graph_2_digit_date = (
+             (graph_ten + pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|
+            (graph_no_zero + graph_digit)
         )
 
-        date_type1 = pynutil.delete("year: \"") + year_graph + pynutil.insert("年") + pynutil.delete(" \"") + " "\
-                    + pynutil.delete("month: \"") + time_number_graph + pynutil.insert("月") + pynutil.delete(" \"") + " "\
-                    + pynutil.delete("day: \"") + time_number_graph + pynutil.insert("日") + pynutil.delete(" \"")
+        date_type1 = pynutil.delete("year: \"") + graph_year + pynutil.insert("年") + pynutil.delete("\"") + " "\
+                    + pynutil.delete("month: \"") + graph_2_digit_date + pynutil.insert("月") + pynutil.delete("\"") + " "\
+                    + pynutil.delete("day: \"") + graph_2_digit_date + pynutil.insert("日") + pynutil.delete("\"")
 
-        date_type2 = pynutil.delete("year: \"") + year_graph + pynutil.insert("年") + pynutil.delete(" \"") + " "\
-                    + pynutil.delete("month: \"") + time_number_graph + pynutil.insert("月") + pynutil.delete(" \"")
+        date_type2 = pynutil.delete("year: \"") + graph_year + pynutil.insert("年") + pynutil.delete("\"") + " "\
+                    + pynutil.delete("month: \"") + graph_2_digit_date + pynutil.insert("月") + pynutil.delete("\"")
 
-        final_graph = date|date_type1|date_type2
-        delete_tokens = self.delete_tokens(final_graph)
+        graoh_date = date_type0|date_type1|date_type2
+        delete_tokens = self.delete_tokens(graoh_date)
         self.fst = delete_tokens.optimize()

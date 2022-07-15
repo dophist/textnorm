@@ -7,7 +7,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    generator_main,
+    NEMO_SIGMA
 )
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
@@ -16,10 +16,10 @@ from nemo_text_processing.text_normalization.zh.taggers.fraction import Fraction
 from nemo_text_processing.text_normalization.zh.taggers.percent import PercentFst
 from nemo_text_processing.text_normalization.zh.taggers.sign import SignFst
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
-from nemo_text_processing.text_normalization.zh.taggers.quantity import QuantityFst
+from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.taggers.erhua import ErhuaFst
-from nemo_text_processing.text_normalization.zh.taggers.qj2bj import Qj2bjFst
+from nemo_text_processing.text_normalization.zh.taggers.erhuaremoval import ErhuaRemovalFst
+from nemo_text_processing.text_normalization.zh.taggers.halfwidth import HalfwidthFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhitelistFst
 from pynini.lib import pynutil
 
@@ -67,26 +67,37 @@ class ClassifyFst(GraphFst):
             start_time = time.time()
             date = DateFst(deterministic=deterministic)
             date_graph = date.fst
+
             number = NumberFst(deterministic=deterministic)
             number_graph = number.fst
+
             word = WordFst(deterministic=deterministic)
             word_graph = word.fst
+
             fraction = FractionFst(deterministic=deterministic)
             fraction_graph = fraction.fst
+
             percent = PercentFst(deterministic=deterministic)
             percent_graph = percent.fst
+
             sign = SignFst(deterministic=deterministic)
             sign_graph = sign.fst
+
             money = MoneyFst(deterministic=deterministic)
             money_graph = money.fst
-            quantity = QuantityFst(deterministic=deterministic)
-            quantity_graph = quantity.fst
+
+            measure = MeasureFst(deterministic=deterministic)
+            measure_graph = measure.fst
+
             Time = TimeFst(deterministic=deterministic)
             time_graph = Time.fst
-            erhua = ErhuaFst(deterministic=deterministic)
+
+            erhua = ErhuaRemovalFst(deterministic=deterministic)
             erhua_graph = erhua.fst
-            qj2bj = Qj2bjFst(deterministic=deterministic)
-            qj2bj_graph = qj2bj.fst
+
+            halfwidth = HalfwidthFst(deterministic=deterministic)
+            halfwidth_graph = halfwidth.fst
+
             whitelist = WhitelistFst(deterministic=deterministic)
             whitelist_graph = whitelist.fst
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
@@ -96,12 +107,12 @@ class ClassifyFst(GraphFst):
                 |pynutil.add_weight(fraction_graph,0.5)
                 |pynutil.add_weight(percent_graph,0.5)
                 |pynutil.add_weight(money_graph,0.5)
-                |pynutil.add_weight(quantity_graph,0.5)
+                |pynutil.add_weight(measure_graph,0.5)
                 |pynutil.add_weight(time_graph,0.5)
                 |pynutil.add_weight(whitelist_graph,0.3)
                 |pynutil.add_weight(number_graph, 1.2)
                 |pynutil.add_weight(sign_graph, 1.5)
-                |pynutil.add_weight(qj2bj_graph, 2.0)
+                |pynutil.add_weight(halfwidth_graph, 2.0)
                 |pynutil.add_weight(erhua_graph, 2.0)
                 |pynutil.add_weight(word_graph, 200)
 
@@ -109,4 +120,5 @@ class ClassifyFst(GraphFst):
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             graph = token
-            self.fst = graph.optimize()
+            graph = pynini.cdrewrite(graph.optimize(),"","",NEMO_SIGMA)
+            self.fst = graph

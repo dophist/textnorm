@@ -1,83 +1,98 @@
-#!/usr/bin/env python3
-# coding=utf-8
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, NEMO_DIGIT, GraphFst, insert_space, NEMO_CHAR
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 class NumberFst(GraphFst):
     '''
-        1.25 --> 一点二五
-        180000 --> 十八万
+        5       -> number { number: "五"}
+        12      -> number { number: "十二"}
+        213     -> number { number: "二百一十三"}
+        3123    -> number { number: "三千一百二十三"}
+        3,123   -> number { number: "三千一百二十三"}
+        51234   -> number { number: "五万一千二百三十四"}
+        51,234  -> number { number: "五万一千二百三十四"}
+        0.125   -> number { number: "零点一二五"}
+
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="number", kind="classify", deterministic=deterministic)
-        STR_TEEN = '十'
-        STR_HUND = '百'
-        STR_THOU = '千'
-        STR_WAN = '万'
-        STR_YI = '亿' 
-        digit_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
-        zero_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
-        digit_teen_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_teen.tsv")))
-        # num_wl_graph = pynini.string_file(get_abs_path("data/number/whitelist.tsv"))
-        # num_graph = pynini.string_file(get_abs_path("data/number/number.tsv"))
-        digit_z_graph = digit_graph|zero_graph
-        digit_null_graph = digit_graph|pynini.cross('0','')
-        digit_teen_graph = digit_teen_graph 
-        u_teen_num_graph = (
-            (digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
-            (zero_graph + digit_graph)
+
+        NEMO_TEN = '十'
+        NEMO_HUNDRED = '百'
+        NEMO_THOUSAND = '千'
+        NEMO_TEN_THOUSAND = '万'
+        NEMO_HUNDRED_MILLION = '亿' 
+
+        graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
+        graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
+        graph_teen = pynini.string_file(get_abs_path("data/number/digit_teen.tsv"))
+        graph_digit_with_zero = graph_digit|graph_zero
+        graph_no_zero = pynini.cross("0","")
+        graph_digit_no_zero = graph_digit|graph_no_zero
+        insert_zero = pynutil.insert('零')
+        delete_punct = (pynutil.delete(",")|pynutil.delete("，"))
+ 
+        graph_ten_u = (
+            (graph_digit + pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|
+            (graph_zero + graph_digit)
         )
-        teen_num_graph = (
-            (digit_teen_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
-            (zero_graph + digit_graph)
+        graph_ten = (
+            (graph_teen + pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|
+            (graph_zero + graph_digit)
         )
-        hund_num_graph = (
-            (digit_graph + pynutil.insert(STR_HUND) + u_teen_num_graph)|
-            (digit_graph + pynutil.insert(STR_HUND) + pynini.cross('0','')**2)
+        graph_hundred = (
+            (graph_digit + pynutil.insert(NEMO_HUNDRED) + graph_ten_u)|
+            (graph_digit + pynutil.insert(NEMO_HUNDRED) + graph_no_zero**2)
         )
-        thou_num_graph = (
-            ((digit_graph + pynutil.insert(STR_THOU) + hund_num_graph)|
-            (digit_graph + pynutil.insert(STR_THOU) + zero_graph + digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
-            (digit_graph + pynutil.insert(STR_THOU) + zero_graph + pynini.cross('0','') + digit_graph)|
-            (digit_graph + pynutil.insert(STR_THOU) + pynini.cross('0','')**3)) 
+        graph_thousand = (
+            ((graph_digit + pynutil.insert(NEMO_THOUSAND) + graph_hundred)|
+            (graph_digit + pynutil.insert(NEMO_THOUSAND) + graph_zero + graph_digit + \
+            pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|
+            (graph_digit + pynutil.insert(NEMO_THOUSAND) + graph_zero + graph_no_zero + graph_digit)|
+            (graph_digit + pynutil.insert(NEMO_THOUSAND) + graph_no_zero**3)) 
         )
-        thou_num_graph_sign =(
-            ((digit_graph + pynutil.insert(STR_THOU) + (pynutil.delete(",")|pynutil.delete("，")) + hund_num_graph)|
-            (digit_graph + pynutil.insert(STR_THOU) + (pynutil.delete(",")|pynutil.delete("，")) + zero_graph + digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
-            (digit_graph + pynutil.insert(STR_THOU) + (pynutil.delete(",")|pynutil.delete("，")) + zero_graph + pynini.cross('0','') + digit_graph)|
-            (digit_graph + pynutil.insert(STR_THOU) + (pynutil.delete(",")|pynutil.delete("，")) + pynini.cross('0','')**3)) 
+        graph_thousand_sign =(
+            ((graph_digit + pynutil.insert(NEMO_THOUSAND) + delete_punct + \
+            graph_hundred)|(graph_digit + pynutil.insert(NEMO_THOUSAND) + \
+            delete_punct + graph_zero + graph_digit + \
+            pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|(graph_digit + pynutil.insert(NEMO_THOUSAND) +\
+            delete_punct + graph_zero + graph_no_zero + graph_digit)| \
+            (graph_digit + pynutil.insert(NEMO_THOUSAND) + delete_punct + \
+            graph_no_zero**3)) 
         )
-        wan_num_graph = (
-            (thou_num_graph|hund_num_graph|teen_num_graph|digit_null_graph) + pynutil.insert(STR_WAN) + (thou_num_graph|
-            (pynini.cross('0','') + pynutil.insert('零') + hund_num_graph)|(pynini.cross('0','')**2 + pynutil.insert('零') + (digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph))|
-            (pynini.cross('0','')**3 + pynutil.insert('零') + digit_graph)|(pynini.cross('0','')**4))
+        graph_ten_thousand = (
+            (graph_thousand|graph_hundred|graph_ten|graph_digit_no_zero) + \
+            pynutil.insert(NEMO_TEN_THOUSAND) + (graph_thousand|(graph_no_zero + \
+            insert_zero + graph_hundred)|(graph_no_zero**2 + \
+            insert_zero + (graph_digit + pynutil.insert(NEMO_TEN) + graph_digit_no_zero))|
+            (graph_no_zero**3 + insert_zero + graph_digit)|(graph_no_zero**4))
         )
-        wan_num_graph_sign = (
-            (thou_num_graph|hund_num_graph|teen_num_graph|digit_null_graph) + \
-            pynutil.insert(STR_WAN) + (thou_num_graph_sign|
-            (pynini.cross('0','') + (pynutil.delete(",")|pynutil.delete("，")) + pynutil.insert('零') + \
-            hund_num_graph)|(pynini.cross('0','') + (pynutil.delete(",")|pynutil.delete("，")) + pynini.cross('0','') + \
-            pynutil.insert('零') + (digit_graph + pynutil.insert(STR_TEEN) + digit_null_graph))|
-            (pynini.cross('0','') + (pynutil.delete(",")|pynutil.delete("，")) + pynini.cross('0','')**2 + pynutil.insert('零') + digit_graph)|(pynini.cross('0','')**4))
+        graph_ten_thousand_sign = (
+            (graph_thousand|graph_hundred|graph_ten|graph_digit_no_zero) + \
+            pynutil.insert(NEMO_TEN_THOUSAND) + (graph_thousand_sign|
+            (graph_no_zero + delete_punct + insert_zero + \
+            graph_hundred)|(graph_no_zero + delete_punct + graph_no_zero + \
+            insert_zero + (graph_digit + pynutil.insert(NEMO_TEN) + graph_digit_no_zero))|
+            (graph_no_zero + delete_punct + graph_no_zero**2 + insert_zero + graph_digit)|(graph_no_zero**4))
         )
-        long_num_graph = (
-            pynini.closure(digit_z_graph,9)
+        graph_numstring = (
+            pynini.closure(graph_digit_with_zero,1)
+            |(pynini.closure(graph_digit_with_zero,1) + pynini.cross(".","点") + pynini.closure(graph_digit_with_zero,1))
         )
         
-        graph = hund_num_graph | thou_num_graph | teen_num_graph | digit_z_graph | wan_num_graph | long_num_graph
-        graph |=thou_num_graph_sign
-        graph |= wan_num_graph_sign
+        graph = graph_hundred | graph_thousand | graph_ten | graph_digit_with_zero | graph_ten_thousand
+        graph |=graph_thousand_sign
+        graph |= graph_ten_thousand_sign
 
-        dem_num_graph = (
-            graph + pynini.cross('.','点') + pynini.closure(digit_z_graph,1) 
-        ).optimize()
-        final_graph = graph | dem_num_graph
-        self.final_graph = final_graph.optimize()
-        num_graph = pynutil.insert("number: \"") + final_graph + pynutil.insert(" \"")
+        graph_decimal = (
+            graph + pynini.cross('.','点') + pynini.closure(graph_digit_with_zero,1) 
+        )
+        graph_number = graph | graph_decimal
+        self.graph_number = graph_number.optimize()
+        graph_numstring = pynutil.insert("number: \"") + graph_numstring + pynutil.insert("\"")
 
-        num_graph = self.add_tokens(num_graph)
-        self.fst = num_graph.optimize()
+        graph_numstring = self.add_tokens(graph_numstring)
+        self.fst = graph_numstring.optimize()
         
         
         

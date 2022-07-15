@@ -4,32 +4,37 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 class TimeFst(GraphFst):
     '''
-        1:25
+        time { hour: "1" min: "02" sec: "36" }  ->  一点零二分三十六秒
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
-        super().__init__(name="time", kind="verbalize", deterministic=deterministic)   
-        digit_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit.tsv")))
-        digit_teen_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_teen.tsv")))
-        zero_graph = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
-        STR_TEEN = '十'
-        digit_null_graph = digit_graph|pynini.cross('0','')
-        time_number_graph = (
-             (digit_teen_graph + pynutil.insert(STR_TEEN) + digit_null_graph)|
-            (zero_graph + digit_graph)
+        super().__init__(name="time", kind="verbalize", deterministic=deterministic)  
+        NEMO_TEN = '十' 
+        graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
+        graph_ten = pynini.string_file(get_abs_path("data/number/digit_teen.tsv"))
+        graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
+        graph_no_zero = pynini.cross("0","")
+
+        graph_digit_no_zero = graph_digit|graph_no_zero
+        graph_2_digit_time = (
+             (graph_ten + pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|
+            (graph_zero + graph_digit)
         )
-        all_zero_graph_none = pynini.cross("0","") + pynini.cross("0","")
-        all_zero_graph = pynini.cross("00","零")
-        clock_no_sec = pynutil.delete("hour: \"") + (time_number_graph|all_zero_graph|digit_graph) + pynutil.insert("点")+ pynutil.delete("\"") + " "\
-                + pynutil.delete("min: \"") + (time_number_graph) + pynutil.insert("分") + pynutil.delete("\"")
-        clock_no_min = pynutil.delete("hour: \"") + (time_number_graph|all_zero_graph|digit_graph) + pynutil.insert("点")+ pynutil.delete("\"") + " "\
-                + pynutil.delete("min: \"") + (all_zero_graph_none) + pynutil.delete("\"")
-        clock_with_sec = pynutil.delete("hour: \"") + (time_number_graph|all_zero_graph|digit_graph) + pynutil.insert("点")+ pynutil.delete("\"") + " "\
-                + pynutil.delete("min: \"") + (time_number_graph|all_zero_graph)  + pynutil.insert("分")+ pynutil.delete("\"") + " "\
-                + pynutil.delete("sec: \"") + (time_number_graph) + pynutil.insert("秒") + pynutil.delete("\"")
+        graph_2_digit_zero_none = pynini.cross("0","") + pynini.cross("0","")
+        graph_2_digit_zero = pynini.cross("00","零")
+
+        clock_no_sec = pynutil.delete("hour: \"") + (graph_2_digit_time|graph_2_digit_zero|graph_digit) + \
+                        pynutil.insert("点")+ pynutil.delete("\"") + " "\
+                        + pynutil.delete("min: \"") + (graph_2_digit_time) + pynutil.insert("分") + pynutil.delete("\"")
+        clock_no_min = pynutil.delete("hour: \"") + (graph_2_digit_time|graph_2_digit_zero|graph_digit) +\
+                         pynutil.insert("点")+ pynutil.delete("\"") + " "\
+                        + pynutil.delete("min: \"") + (graph_2_digit_zero_none) + pynutil.delete("\"")
+        clock_with_sec = pynutil.delete("hour: \"") + (graph_2_digit_time|graph_2_digit_zero|graph_digit) + \
+                        pynutil.insert("点")+ pynutil.delete("\"") + " "\
+                        + pynutil.delete("min: \"") + (graph_2_digit_time|graph_2_digit_zero)  + pynutil.insert("分")+\
+                        pynutil.delete("\"") + " " + pynutil.delete("sec: \"") + \
+                        (graph_2_digit_time) + pynutil.insert("秒") + pynutil.delete("\"")
         clock_graph = clock_no_sec|clock_with_sec|clock_no_min
 
-
-        
-        final_graph = clock_graph
-        final_graph = self.delete_tokens(final_graph)
-        self.fst = final_graph.optimize()
+        graph_time = clock_graph
+        graph_time = self.delete_tokens(graph_time)
+        self.fst = graph_time.optimize()

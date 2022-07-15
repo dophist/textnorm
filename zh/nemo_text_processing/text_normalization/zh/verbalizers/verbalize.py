@@ -6,10 +6,10 @@ from nemo_text_processing.text_normalization.zh.verbalizers.fraction import Frac
 from nemo_text_processing.text_normalization.zh.verbalizers.percent import PercentFst
 from nemo_text_processing.text_normalization.zh.verbalizers.sign import SignFst
 from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.zh.verbalizers.quantity import QuantityFst
+from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.verbalizers.erhua import ErhuaFst
-from nemo_text_processing.text_normalization.zh.verbalizers.qj2bj import Qj2bjFst
+from nemo_text_processing.text_normalization.zh.verbalizers.erhuaremoval import ErhuaRemovalFst
+from nemo_text_processing.text_normalization.zh.verbalizers.halfwidth import HalfwidthFst
 from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import WhitelistFst
 class VerbalizeFst(GraphFst):
     """
@@ -23,30 +23,43 @@ class VerbalizeFst(GraphFst):
 
     def __init__(self, deterministic: bool = True):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
+
         date = DateFst(deterministic=deterministic)
         date_graph = date.fst
+
         number = NumberFst(deterministic=deterministic)
         number_graph = number.fst
+        
         word = WordFst(deterministic=deterministic)
         word_graph = word.fst
+
         fraction = FractionFst(deterministic=deterministic)
         fraction_graph = fraction.fst
+
         percent = PercentFst(deterministic=deterministic)
         percent_graph = percent.fst
+
         sign = SignFst(deterministic=deterministic)
         sign_graph = sign.fst
+
         money = MoneyFst(deterministic=deterministic)
         money_graph = money.fst
-        quantity = QuantityFst(deterministic=deterministic)
-        quantity_graph = quantity.fst
+
+        measure = MeasureFst(deterministic=deterministic)
+        measure_graph = measure.fst
+
         time = TimeFst(deterministic=deterministic)
         time_graph = time.fst
-        erhua = ErhuaFst(deterministic=deterministic)
+
+        erhua = ErhuaRemovalFst(deterministic=deterministic)
         erhua_graph = erhua.fst
-        qj2bj = Qj2bjFst(deterministic=deterministic)
-        qj2bj_graph = qj2bj.fst
+
+        halfwidth = HalfwidthFst(deterministic=deterministic)
+        halfwidth_graph = halfwidth.fst
+        
         whitelist = WhitelistFst(deterministic=deterministic)
         whitelist_graph = whitelist.fst
+
         graph = ( 
         	date_graph
             |number_graph
@@ -55,10 +68,10 @@ class VerbalizeFst(GraphFst):
             |sign_graph
             |percent_graph
             |money_graph
-            |quantity_graph
+            |measure_graph
             |time_graph
             |erhua_graph
-            |qj2bj_graph
+            |halfwidth_graph
             |whitelist_graph
         )
         self.fst = graph

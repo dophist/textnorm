@@ -1,0 +1,7 @@
+model	dataset	info	WER	SER
+google	GIGASPEECH_DEV	without_tn	16.23%	83.25%
+google	GIGASPEECH_DEV	tn	13.24%	79.18%
+google	GIGASPEECH_DEV	tn+asr_plus	11.94%	76.16%
+microsoft	GIGASPEECH_DEV	without_tn	12.59%	76.58%
+microsoft	GIGASPEECH_DEV	without_tn+asr_plus	11.28%	73.21%
+microsoft	GIGASPEECH_DEV	tn+asr_plus	9.24%	68.09%

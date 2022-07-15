@@ -3,7 +3,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, G
 from pynini.lib import pynutil
 class WhitelistFst(GraphFst):
     '''
-        whitelist { whitelist "f i f a" } ->  FIFA
+        CEO  -> whitelist { whitelist: "CEO" }  ->  C E O
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic)

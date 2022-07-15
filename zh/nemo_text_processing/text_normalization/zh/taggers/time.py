@@ -4,9 +4,8 @@ from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
 from pynini.lib import pynutil
 class TimeFst(GraphFst):
     '''
-        1:02
-        1:02:36
-        2002/01/28
+        1:02          -> time { hour: "1" min: "02" }
+        1:02:36       -> time { hour: "1" min: "02" sec: "36" }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="time", kind="classify", deterministic=deterministic)

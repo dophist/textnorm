@@ -61,18 +61,18 @@ def augment_labels_with_punct_at_end(labels):
     return res
 
 
-def chr_sep(line):
-    m = '' 
-    for i,chr in enumerate(line):
-        if '\u4e00' <= chr <= '\u9fa5' or '\uff01' <= chr <= '\uff5e':
-            if i+1 < len(line) and ('\u4e00' <= line[i+1] <= '\u9fa5' or '\uff01' <= line[i+1] <= '\uff5e') and i !=0:
-                m+=' ' + chr
-            else:
-                m+=' ' + chr + ' '
+# def chr_sep(line):
+#     m = '' 
+#     for i,chr in enumerate(line):
+#         if '\u4e00' <= chr <= '\u9fa5' or '\uff01' <= chr <= '\uff5e':
+#             if i+1 < len(line) and ('\u4e00' <= line[i+1] <= '\u9fa5' or '\uff01' <= line[i+1] <= '\uff5e') and i !=0:
+#                 m+=' ' + chr
+#             else:
+#                 m+=' ' + chr + ' '
             
-        else:
-            m+=chr
-    return m
+#         else:
+#             m+=chr
+#     return m
 
 def inverse_chr_sep(line):
     m = ''
