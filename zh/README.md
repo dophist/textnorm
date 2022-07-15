@@ -1,8 +1,11 @@
-# Text Normalization For Chinese
-## cases:
-|  previous  |    after TN    |
-|:----------:|:--------------:|
-|  123.5个   | 一百二十三点五个|
-|  0.2223只  | 零点二二二三只  |
-|  12315     |  一二三一五     |	
-|  5:02      |  五点零二分     |
+# textnorm
+
+## reference
+O'REILLY tutorial: https://www.oreilly.com/content/how-to-get-superior-text-processing-in-python-with-pynini/
+
+pynini paper: https://aclanthology.org/W16-2409.pdf
+
+pynini doc: https://www.openfst.org/twiki/bin/view/GRM/PyniniDocs
+
+Gorman slides: https://www.ldc.upenn.edu/sites/www.ldc.upenn.edu/files/kbg2019.pdf
+
