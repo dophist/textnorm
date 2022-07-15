@@ -1,4 +1,85 @@
-# Text Normalization For Chinese
+# Chinese Text Normalization
+## 1. Supported Normalizations
+### Numbers
+```
+共65篇，约66万字 -> 共六十五篇，约六十六万字
+共计6.42万人 -> 共计六点四二万人
+同比升高0.6个百分点 -> 同比升高零点六个百分点
+```
+
+### Fraction
+```
+总量的1/5以上 -> 总量的五分之一以上
+相当于头发丝的1/16 -> 相当于头发丝的十六分之一
+```
+
+### Percentage
+```
+同比增长6.3% -> 同比增长百分之六点三
+增幅0.4% -> 增幅百分之零点四
+```
+
+### Date
+```
+2002/01/28 -> 二零零二年一月二十八日
+2002-01-28 -> 二零零二年一月二十八日
+2002.01.28 -> 二零零二年一月二十八日
+2002/01 -> 二零零二年一月
+```
+
+### Time
+```
+8月16号12:00之前 -> 八月十六号十二点之前
+我是5:02 a.m. 开始的 -> 我是五点零二分 a m 开始的
+于5:35:36发射 -> 于五点三十五分三十六秒发射
+```
+
+### Game score
+```
+比分定格在78:96 -> 比分定格在七十八比九十六
+英格兰跟西班牙踢了个3-2 -> 英格兰跟西班牙踢了个三比二
+```
+
+### Money
+```
+
+```
+
+### Measure
+```
+
+```
+
+### Number series (phone, mobile numbers)
+```
+
+```
+
+### Erhua Removal
+```
+这儿有只鸟儿 -> 这有只鸟
+儿孙满堂 -> 儿孙满堂
+```
+
+### Whitelist (customizable direct transformation)
+```
+CEO -> C E O
+GPU -> G P U
+O2O -> O to O
+B2B -> B to B
+```
+
+### Fullwidth -> Halfwidth char conversion
+```
+
+```
+
+### Charset Checker: if enabled, non-standard chars will be tagged with '<>'
+```
+我们안녕 -> 我们<안><녕>
+雪の花 -> 雪<の>花
+```
+
 ## cases:
 |  previous  |    after TN    |
 |:----------:|:--------------:|
@@ -26,8 +107,28 @@
 |  26%       |   百分之二十六 |
 
 
-## structure
-data/
+## Knowledge Resources (data/*)
+### *national_standard_2013_mandarin_charset_8105.tsv*
+2013 national standard, officially standardizing 8105 most common chars in Chinese [wiki-通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
+
+* currency.tsv: containing common currency signs
+	```
+	$, £, € ...
+	```
+
+* width.tsv: containing fullwidth -> halfwidth char mapping
+	```
+	９ -> 9
+	Ｊ -> J
+	？ -> ?
+	```
+
+* erhua_removal_whitelist.tsv
+* math.tsv
+* measure.tsv
+
+
+###
 |      tsv file             |      role                             |
 |:--------------------------:|:------------------------------------:|
 |./measure/measure.tsv      |Common unit symbols in Chinese format  |
