@@ -22,6 +22,7 @@ class AccentFst(GraphFst):
         past_graph = pynini.string_file(get_abs_path("data/accent/past.tsv"))|(pynini.closure(NEMO_ALPHA)+'ed')
         item_graph = pynini.string_file(get_abs_path("data/accent/items.tsv"))
         n_word = pynini.closure(NEMO_ALPHA)
+        n_word_not_none = pynini.closure(NEMO_ALPHA,1)
         s_word = pynini.accep('\'s')
         d_word = pynini.accep('\'d')
         other_graph = (
@@ -31,7 +32,7 @@ class AccentFst(GraphFst):
             pynutil.insert("word: \"") + n_word + subs_graph + pynutil.insert("\"")
         )
         has_graph = (
-            pynutil.insert("word: \"") + n_word + pynutil.insert(NEMO_SPACE) + 
+            pynutil.insert("word: \"") + n_word_not_none + pynutil.insert(NEMO_SPACE) + 
             pynini.cross(s_word, 'has') + NEMO_SPACE + past_graph + pynutil.insert("\"")
         )
         is_graph = (
@@ -39,11 +40,11 @@ class AccentFst(GraphFst):
             pynini.cross(s_word, 'is') + NEMO_SPACE + other_graph + pynutil.insert("\"")
         )
         had_graph = (
-            pynutil.insert("word: \"") + n_word + pynutil.insert(NEMO_SPACE) + 
+            pynutil.insert("word: \"") + n_word_not_none + pynutil.insert(NEMO_SPACE) + 
             pynini.cross(d_word, 'had') + NEMO_SPACE + past_graph + pynutil.insert("\"")
         )
         would_graph = (
-            pynutil.insert("word: \"") + n_word + pynutil.insert(NEMO_SPACE) + 
+            pynutil.insert("word: \"") + n_word_not_none + pynutil.insert(NEMO_SPACE) + 
             pynini.cross(d_word, 'would') + NEMO_SPACE + other_graph + pynutil.insert("\"")
         )
         graph = pynini.union(
