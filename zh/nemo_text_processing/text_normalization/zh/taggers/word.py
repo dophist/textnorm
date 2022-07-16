@@ -11,10 +11,13 @@ class WordFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
         er = pynutil.insert("er_word: \"") + "儿" + pynutil.insert("\"")
-        standard_charset = load_labels(get_abs_path("data/national_standard_2013_mandarin_charset_8105.tsv"))
-        standard_charset_graph = "一"
+        standard_charset = load_labels(get_abs_path("data/charset/national_standard_2013_mandarin_charset_8105.tsv"))
+        standard_charset_ext = load_labels(get_abs_path("data/charset/extension.tsv"))
+        standard_charset_graph = "一" # TODO: ???
         for word in standard_charset:
             standard_charset_graph|=pynini.accep(word[0])
+
+        # TODO: load from data/charset/removal.tsv
         word_e = pynutil.insert("e_word: \"") + "呃" + pynutil.insert("\"")
         word_a = pynutil.insert("a_word: \"") + "啊" + pynutil.insert("\"")
         word = pynutil.insert("word: \"") + pynini.difference((standard_charset_graph|NEMO_DIGIT|NEMO_ALPHA|NEMO_PUNCT),(pynini.accep("儿")|pynini.accep("呃")|pynini.accep("啊"))) + pynutil.insert("\"")
