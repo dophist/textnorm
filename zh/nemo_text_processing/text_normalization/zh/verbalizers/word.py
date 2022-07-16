@@ -16,7 +16,10 @@ class WordFst(GraphFst):
         word_e = pynutil.delete("e_word: \"") + pynutil.delete("呃") + pynutil.delete("\"")
         word_a = pynutil.delete("a_word: \"") + pynutil.delete("啊") + pynutil.delete("\"")
         er = pynutil.delete("er_word: \"") + pynutil.delete("儿") + pynutil.delete("\"")
-        word_other = pynutil.delete("other: \"") + pynutil.insert("<") + NEMO_CHAR  + pynutil.insert(">") + pynutil.delete("\"")
+        # TODO: can we make '<' & '>' configurable via data/char/charset_illegal_tags.tsv
+        # a single line with user-defined ltag & rtag, seperated by tab
+        # we can set default ltag = '<', and rtag = '>'
+        word_other = pynutil.delete("other: \"") + pynutil.insert("<") + NEMO_CHAR  + pynutil.insert(">") + pynutil.delete("\"") 
         word|=er
         word|=word_a
         word|=word_e

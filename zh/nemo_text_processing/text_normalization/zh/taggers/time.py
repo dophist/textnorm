@@ -9,18 +9,27 @@ class TimeFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
-        # TODO: how do we ensure fullwidth version of : is properly handled or converted beforehand
-        clock_hour = pynini.closure(NEMO_DIGIT,1) + pynutil.delete(':')
-        clock_min = pynini.closure(NEMO_DIGIT,2,2)
-        clock_min_with_sec = pynini.closure(NEMO_DIGIT,2,2) +  pynutil.delete(':')
-        clock_second = pynini.closure(NEMO_DIGIT,1,2)
-        clock_no_sec_graph = pynutil.insert("hour: \"") + clock_hour + pynutil.insert("\"")\
-        + insert_space + pynutil.insert("min: \"") + clock_min + pynutil.insert("\"")
-        clock_with_sec_graph = pynutil.insert("hour: \"") + clock_hour + pynutil.insert("\"")\
-        + insert_space + pynutil.insert("min: \"") + clock_min_with_sec + pynutil.insert("\"")\
-        + insert_space + pynutil.insert("sec: \"") + clock_second + pynutil.insert("\"")
-        clock_graph = clock_no_sec_graph|clock_with_sec_graph
+        # TODO: how do we ensure fullwidth version of : is properly handled or converted beforehand ?
+        # TODO: we can have tighter constrains, e.g.:
+        #     h in [0,24), m & s in [00, 60)
+        #     then we can have time patterns like h:m, h:m:s etc
+        h = pynini.closure(NEMO_DIGIT, 1)
+        m = pynini.closure(NEMO_DIGIT, 2, 2)
+        s = pynini.closure(NEMO_DIGIT, 1, 2)
 
-        time_graph = clock_graph
-        time_graph = self.add_tokens(time_graph)
-        self.fst = time_graph.optimize()
+        h_m = \
+            pynutil.insert('hour: "') + h + pynutil.insert('"') + \
+            pynini.cross(':', ' ') + \
+            pynutil.insert('min: "') + m + pynutil.insert('"')
+
+        h_m_s = \
+            pynutil.insert('hour: "') + h + pynutil.insert('"') + \
+            pynini.cross(':', ' ') + \
+            pynutil.insert('min: "') + m + pynutil.insert('"') + \
+            pynini.cross(':', ' ') + \
+            pynutil.insert('sec: "') + s + pynutil.insert('"')
+
+        patterns = h_m | h_m_s
+
+        tagger = self.add_tokens(patterns)
+        self.fst = tagger.optimize()

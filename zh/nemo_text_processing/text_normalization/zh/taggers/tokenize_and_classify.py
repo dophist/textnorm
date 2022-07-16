@@ -104,19 +104,18 @@ class ClassifyFst(GraphFst):
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
 
             classify = (
-                pynutil.add_weight(date_graph, 0.4)               
-                |pynutil.add_weight(fraction_graph,0.5)
-                |pynutil.add_weight(percent_graph,0.5)
-                |pynutil.add_weight(money_graph,0.5)
-                |pynutil.add_weight(measure_graph,0.5)
-                |pynutil.add_weight(time_graph,0.5)
-                |pynutil.add_weight(whitelist_graph,0.3)
-                |pynutil.add_weight(number_graph, 1.2)
-                |pynutil.add_weight(math_symbol_graph, 1.5)
-                |pynutil.add_weight(halfwidth_graph, 2.0)
-                |pynutil.add_weight(erhua_graph, 2.0)
-                |pynutil.add_weight(word_graph, 200)
-
+                pynutil.add_weight(date_graph,        0.4) |
+                pynutil.add_weight(fraction_graph,    0.5) |
+                pynutil.add_weight(percent_graph,     0.5) |
+                pynutil.add_weight(money_graph,       0.5) |
+                pynutil.add_weight(measure_graph,     0.5) |
+                pynutil.add_weight(time_graph,        0.5) |
+                pynutil.add_weight(whitelist_graph,   0.3) |
+                pynutil.add_weight(number_graph,      1.2) |
+                pynutil.add_weight(math_symbol_graph, 1.5) |
+                pynutil.add_weight(halfwidth_graph,   2.0) |
+                pynutil.add_weight(erhua_graph,       2.0) |
+                pynutil.add_weight(word_graph,        200)
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
