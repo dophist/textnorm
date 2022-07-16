@@ -2,7 +2,7 @@
 ## 1. Supported Normalizations
 ### Numbers
 ```
-共65篇，约66万字 -> 共六十五篇，约六十六万字
+共465篇，约315万字 -> 共四百六十五篇，约三百一十五万字
 共计6.42万人 -> 共计六点四二万人
 同比升高0.6个百分点 -> 同比升高零点六个百分点
 ```
@@ -101,4 +101,3 @@ _**If enabled**_, non-standard chars(out of charset) will be tagged with '<>'
 * you can extend charset by customizing `data/char/charset_extension.tsv`
 
 ## How To Use
-
