@@ -17,11 +17,12 @@ class NumberFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="number", kind="classify", deterministic=deterministic)
 
-        NEMO_TEN = '十'
-        NEMO_HUNDRED = '百'
-        NEMO_THOUSAND = '千'
-        NEMO_TEN_THOUSAND = '万'
-        NEMO_HUNDRED_MILLION = '亿' 
+        UNIT_1e01 = '十'
+        UNIT_1e02 = '百'
+        UNIT_1e03 = '千'
+        UNIT_1e04 = '万'
+        UNIT_1e08 = '亿'
+        UNIT_1e12 = '兆'
 
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
@@ -33,46 +34,46 @@ class NumberFst(GraphFst):
         delete_punct = (pynutil.delete(",")|pynutil.delete("，"))
  
         graph_ten_u = (
-            (graph_digit + pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|
+            (graph_digit + pynutil.insert(UNIT_1e01) + graph_digit_no_zero)|
             (graph_zero + graph_digit)
         )
         graph_ten = (
-            (graph_teen + pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|
+            (graph_teen + pynutil.insert(UNIT_1e01) + graph_digit_no_zero)|
             (graph_zero + graph_digit)
         )
         graph_hundred = (
-            (graph_digit + pynutil.insert(NEMO_HUNDRED) + graph_ten_u)|
-            (graph_digit + pynutil.insert(NEMO_HUNDRED) + graph_no_zero**2)
+            (graph_digit + pynutil.insert(UNIT_1e02) + graph_ten_u)|
+            (graph_digit + pynutil.insert(UNIT_1e02) + graph_no_zero**2)
         )
         graph_thousand = (
-            ((graph_digit + pynutil.insert(NEMO_THOUSAND) + graph_hundred)|
-            (graph_digit + pynutil.insert(NEMO_THOUSAND) + graph_zero + graph_digit + \
-            pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|
-            (graph_digit + pynutil.insert(NEMO_THOUSAND) + graph_zero + graph_no_zero + graph_digit)|
-            (graph_digit + pynutil.insert(NEMO_THOUSAND) + graph_no_zero**3)) 
+            ((graph_digit + pynutil.insert(UNIT_1e03) + graph_hundred)|
+            (graph_digit + pynutil.insert(UNIT_1e03) + graph_zero + graph_digit + \
+            pynutil.insert(UNIT_1e01) + graph_digit_no_zero)|
+            (graph_digit + pynutil.insert(UNIT_1e03) + graph_zero + graph_no_zero + graph_digit)|
+            (graph_digit + pynutil.insert(UNIT_1e03) + graph_no_zero**3)) 
         )
         graph_thousand_sign =(
-            ((graph_digit + pynutil.insert(NEMO_THOUSAND) + delete_punct + \
-            graph_hundred)|(graph_digit + pynutil.insert(NEMO_THOUSAND) + \
+            ((graph_digit + pynutil.insert(UNIT_1e03) + delete_punct + \
+            graph_hundred)|(graph_digit + pynutil.insert(UNIT_1e03) + \
             delete_punct + graph_zero + graph_digit + \
-            pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|(graph_digit + pynutil.insert(NEMO_THOUSAND) +\
+            pynutil.insert(UNIT_1e01) + graph_digit_no_zero)|(graph_digit + pynutil.insert(UNIT_1e03) +\
             delete_punct + graph_zero + graph_no_zero + graph_digit)| \
-            (graph_digit + pynutil.insert(NEMO_THOUSAND) + delete_punct + \
+            (graph_digit + pynutil.insert(UNIT_1e03) + delete_punct + \
             graph_no_zero**3)) 
         )
         graph_ten_thousand = (
             (graph_thousand|graph_hundred|graph_ten|graph_digit_no_zero) + \
-            pynutil.insert(NEMO_TEN_THOUSAND) + (graph_thousand|(graph_no_zero + \
+            pynutil.insert(UNIT_1e04) + (graph_thousand|(graph_no_zero + \
             insert_zero + graph_hundred)|(graph_no_zero**2 + \
-            insert_zero + (graph_digit + pynutil.insert(NEMO_TEN) + graph_digit_no_zero))|
+            insert_zero + (graph_digit + pynutil.insert(UNIT_1e01) + graph_digit_no_zero))|
             (graph_no_zero**3 + insert_zero + graph_digit)|(graph_no_zero**4))
         )
         graph_ten_thousand_sign = (
             (graph_thousand|graph_hundred|graph_ten|graph_digit_no_zero) + \
-            pynutil.insert(NEMO_TEN_THOUSAND) + (graph_thousand_sign|
+            pynutil.insert(UNIT_1e04) + (graph_thousand_sign|
             (graph_no_zero + delete_punct + insert_zero + \
             graph_hundred)|(graph_no_zero + delete_punct + graph_no_zero + \
-            insert_zero + (graph_digit + pynutil.insert(NEMO_TEN) + graph_digit_no_zero))|
+            insert_zero + (graph_digit + pynutil.insert(UNIT_1e01) + graph_digit_no_zero))|
             (graph_no_zero + delete_punct + graph_no_zero**2 + insert_zero + graph_digit)|(graph_no_zero**4))
         )
         graph_numstring = (
