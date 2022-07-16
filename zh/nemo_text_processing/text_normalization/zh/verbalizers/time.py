@@ -8,7 +8,10 @@ class TimeFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)  
+        # TODO: use UNIT_1e1 in utils
         NEMO_TEN = '十' 
+
+        # TODO: refer to time tagger, we should have better implementation for time verbalizer
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         graph_ten = pynini.string_file(get_abs_path("data/number/digit_teen.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))

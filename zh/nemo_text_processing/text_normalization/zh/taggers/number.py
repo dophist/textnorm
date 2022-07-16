@@ -17,6 +17,7 @@ class NumberFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="number", kind="classify", deterministic=deterministic)
 
+        # TODO: move these to utils
         UNIT_1e01 = '十'
         UNIT_1e02 = '百'
         UNIT_1e03 = '千'
