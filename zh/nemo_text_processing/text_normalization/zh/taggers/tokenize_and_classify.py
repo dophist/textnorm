@@ -14,7 +14,7 @@ from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
 from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
 from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.zh.taggers.percent import PercentFst
-from nemo_text_processing.text_normalization.zh.taggers.sign import SignFst
+from nemo_text_processing.text_normalization.zh.taggers.math import MathSymbolFst
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
@@ -80,8 +80,8 @@ class ClassifyFst(GraphFst):
             percent = PercentFst(deterministic=deterministic)
             percent_graph = percent.fst
 
-            sign = SignFst(deterministic=deterministic)
-            sign_graph = sign.fst
+            math_symbol = MathSymbolFst(deterministic=deterministic)
+            math_symbol_graph = math_symbol.fst
 
             money = MoneyFst(deterministic=deterministic)
             money_graph = money.fst
@@ -111,7 +111,7 @@ class ClassifyFst(GraphFst):
                 |pynutil.add_weight(time_graph,0.5)
                 |pynutil.add_weight(whitelist_graph,0.3)
                 |pynutil.add_weight(number_graph, 1.2)
-                |pynutil.add_weight(sign_graph, 1.5)
+                |pynutil.add_weight(math_symbol_graph, 1.5)
                 |pynutil.add_weight(halfwidth_graph, 2.0)
                 |pynutil.add_weight(erhua_graph, 2.0)
                 |pynutil.add_weight(word_graph, 200)

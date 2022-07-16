@@ -4,7 +4,7 @@ from nemo_text_processing.text_normalization.zh.verbalizers.number import Number
 from nemo_text_processing.text_normalization.zh.verbalizers.word import WordFst
 from nemo_text_processing.text_normalization.zh.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.zh.verbalizers.percent import PercentFst
-from nemo_text_processing.text_normalization.zh.verbalizers.sign import SignFst
+from nemo_text_processing.text_normalization.zh.verbalizers.math import MathSymbolFst
 from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
@@ -39,8 +39,8 @@ class VerbalizeFst(GraphFst):
         percent = PercentFst(deterministic=deterministic)
         percent_graph = percent.fst
 
-        sign = SignFst(deterministic=deterministic)
-        sign_graph = sign.fst
+        math_symbol = MathSymbolFst(deterministic=deterministic)
+        math_symbol_graph = math_symbol.fst
 
         money = MoneyFst(deterministic=deterministic)
         money_graph = money.fst
@@ -65,7 +65,7 @@ class VerbalizeFst(GraphFst):
             |number_graph
             |fraction_graph
             |word_graph
-            |sign_graph
+            |math_symbol_graph
             |percent_graph
             |money_graph
             |measure_graph

@@ -2,7 +2,7 @@ import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, NEMO_NOT_QUOTE ,GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
-class SignFst(GraphFst):
+class MathSymbolFst(GraphFst):
     '''
         sign { sign: "+" }  -> 加
     '''
