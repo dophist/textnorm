@@ -8,7 +8,7 @@ from nemo_text_processing.text_normalization.zh.verbalizers.math import MathSymb
 from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.verbalizers.erhuaremoval import ErhuaRemovalFst
+from nemo_text_processing.text_normalization.zh.verbalizers.erhua_removal import ErhuaRemovalFst
 from nemo_text_processing.text_normalization.zh.verbalizers.halfwidth import HalfwidthFst
 from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import WhitelistFst
 class VerbalizeFst(GraphFst):
