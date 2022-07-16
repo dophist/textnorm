@@ -18,7 +18,7 @@ from nemo_text_processing.text_normalization.zh.taggers.sign import SignFst
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.taggers.erhuaremoval import ErhuaRemovalFst
+from nemo_text_processing.text_normalization.zh.taggers.erhua_removal import ErhuaRemovalFst
 from nemo_text_processing.text_normalization.zh.taggers.halfwidth import HalfwidthFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhitelistFst
 from pynini.lib import pynutil
