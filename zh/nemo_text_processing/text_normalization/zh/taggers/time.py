@@ -11,7 +11,7 @@ class TimeFst(GraphFst):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
         # TODO: how do we ensure fullwidth version of : is properly handled or converted beforehand ?
         # TODO: we can have tighter constrains, e.g.:
-        #     h in [0,24), m & s in [00, 60)
+        #     h in [0,24), m & s in [00, 60), you can use python's range() or a .tsv file as helper
         #     then we can have time patterns like h:m, h:m:s etc
         h = pynini.closure(NEMO_DIGIT, 1)
         m = pynini.closure(NEMO_DIGIT, 2, 2)
@@ -30,6 +30,4 @@ class TimeFst(GraphFst):
             pynutil.insert('sec: "') + s + pynutil.insert('"')
 
         patterns = h_m | h_m_s
-
-        tagger = self.add_tokens(patterns)
-        self.fst = tagger.optimize()
+        self.fst = self.add_tokens(patterns).optimize()
