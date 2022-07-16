@@ -60,26 +60,28 @@
 ```
 
 
-### Whitelist (customizable direct transformation)
+### Whitelist (user-defined string replacement)
 ```
 CEO -> C E O
 GPU -> G P U
 O2O -> O to O
 B2B -> B to B
 ```
+* customizable via `data/whitelist/whitelist.tsv`
 
-### Char Width Conversion
-Fullwidth -> Halfwidth
+### Char Width Conversion (全角 -> 半角)
 ```
 苹果ＣＥＯ宣布发布新ＩＰＨＯＮＥ -> 苹果CEO宣布发布新IPHONE
 ```
+* covers English letters, digits, punctuations and some symbols
+* the complete mapping table `data/char/fullwidth_to_halfwidth.tsv`
 
 ### Char Removal
 Sometime you may want to remove certain chars like interjections/fillers "啊", "呃" etc
 ```
 呃这个呃啊额我不知道 -> 这个我不知道
 ```
-* you can customize the removal list via `data/char/removal.tsv`
+* customizable via `data/char/removal.tsv`
 
 ### Erhua(儿化音) Removal
 ```
@@ -88,7 +90,7 @@ Sometime you may want to remove certain chars like interjections/fillers "啊", 
 儿孙满堂 -> 儿孙满堂
 女儿 -> 女儿
 ```
-* You can add words to `data/char/erhua_removal_whitelist.tsv` to avoid erroneous erhua removals.
+* customizable via `data/char/erhua_removal_whitelist.tsv` to avoid unwanted removals.
 
 ### Invalid Char Tagger
 _**If enabled**_, non-standard chars(out of charset) will be tagged with '<>'
@@ -98,6 +100,6 @@ _**If enabled**_, non-standard chars(out of charset) will be tagged with '<>'
 ```
 * invalid char tagger is switched off by default
 * default charset (national standard) [通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
-* you can extend charset by customizing `data/char/charset_extension.tsv`
+* you can extend legit chars via `data/char/charset_extension.tsv`
 
 ## How To Use
