@@ -8,7 +8,7 @@ class MathSymbolFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="sign", kind="classify", deterministic=deterministic)
-        sign_graph = pynini.string_file(get_abs_path("data/math/math_symbol.tsv"))
+        sign_graph = pynini.string_file(get_abs_path("data/math/symbol.tsv"))
         sign_graph = pynutil.insert("sign: \"") + sign_graph + pynutil.insert("\"")
         sign_graph = self.add_tokens(sign_graph)
         self.fst = sign_graph.optimize()

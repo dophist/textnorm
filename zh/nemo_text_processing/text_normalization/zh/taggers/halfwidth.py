@@ -8,7 +8,7 @@ class HalfwidthFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="halfwidth", kind="classify", deterministic=deterministic)
-        halfwidth = pynini.string_file(get_abs_path("data/charset/fullwidth_to_halfwidth.tsv"))
+        halfwidth = pynini.string_file(get_abs_path("data/char/fullwidth_to_halfwidth.tsv"))
         graph_halfwidth = pynutil.insert("halfwidth: \"") + halfwidth + pynutil.insert("\"")
         graph_halfwidth = self.add_tokens(graph_halfwidth)
         self.fst = graph_halfwidth.optimize()

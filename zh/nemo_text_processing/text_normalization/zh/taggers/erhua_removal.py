@@ -9,7 +9,7 @@ class ErhuaRemovalFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="erhua", kind="classify", deterministic=deterministic)
-        whitelist = load_labels(get_abs_path("data/erhua/erhua_removal_whitelist.tsv"))
+        whitelist = load_labels(get_abs_path("data/char/erhua_removal_whitelist.tsv"))
         erhua_graph = "男儿"
         for word in whitelist:
             erhua_graph|=pynini.accep(word[0])

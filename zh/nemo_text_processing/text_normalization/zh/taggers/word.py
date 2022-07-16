@@ -11,8 +11,8 @@ class WordFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="word", kind="classify", deterministic=deterministic)
         er = pynutil.insert("er_word: \"") + "儿" + pynutil.insert("\"")
-        standard_charset = load_labels(get_abs_path("data/charset/national_standard_2013_mandarin_charset_8105.tsv"))
-        standard_charset_ext = load_labels(get_abs_path("data/charset/extension.tsv"))
+        standard_charset = load_labels(get_abs_path("data/char/national_standard_2013_mandarin_charset_8105.tsv"))
+        standard_charset_ext = load_labels(get_abs_path("data/char/charset_extension.tsv"))
         standard_charset_graph = "一" # TODO: ???
         for word in standard_charset:
             standard_charset_graph|=pynini.accep(word[0])

@@ -30,8 +30,9 @@
 ### Time
 ```
 8月16号12:00之前 -> 八月十六号十二点之前
-我是5:02 a.m. 开始的 -> 我是五点零二分 a m 开始的
+我是5:02开始的 -> 我是五点零二分开始的
 于5:35:36发射 -> 于五点三十五分三十六秒发射
+8:00 a.m. 准时开会 -> 八点 a m 准时开会
 ```
 
 ### Score
@@ -58,13 +59,6 @@
 可以打我手机13501234567 -> 可以打我手机一三五零一二三四五六七
 ```
 
-### Erhua(儿化音) Removal
-```
-儿孙满堂 -> 儿孙满堂
-女儿 -> 女儿
-这儿有只鸟儿 -> 这有只鸟
-这事儿不太好办 -> 这事不太好办
-```
 
 ### Whitelist (customizable direct transformation)
 ```
@@ -74,46 +68,37 @@ O2O -> O to O
 B2B -> B to B
 ```
 
-### Fullwidth -> Halfwidth char conversion
+### Char Width Conversion
+Fullwidth -> Halfwidth
 ```
 苹果ＣＥＯ宣布发布新ＩＰＨＯＮＥ -> 苹果CEO宣布发布新IPHONE
 ```
 
-### Charset Checker: if enabled, non-standard chars will be tagged with '<>'
+### Char Removal
+Sometime you may want to remove certain chars like interjections/fillers "啊", "呃" etc
+```
+呃这个呃啊额我不知道 -> 这个我不知道
+```
+* you can customize the removal list via `data/char/removal.tsv`
+
+### Erhua(儿化音) Removal
+```
+这儿有只鸟儿 -> 这有只鸟
+这事儿不太好办 -> 这事不太好办
+儿孙满堂 -> 儿孙满堂
+女儿 -> 女儿
+```
+* You can add words to `data/char/erhua_removal_whitelist.tsv` to avoid erroneous erhua removals.
+
+### Invalid Char Tagger
+_**If enabled**_, non-standard chars(out of charset) will be tagged with '<>'
 ```
 我们안녕 -> 我们<안><녕>
 雪の花 -> 雪<の>花
 ```
+* invalid char tagger is switched off by default
+* default charset (national standard) [通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
+* you can extend charset by customizing `data/char/charset_extension.tsv`
 
+## How To Use
 
-## 2. Knowledge Resources (data/*)
-* national_standard_2013_mandarin_charset_8105.tsv: [wiki-通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
-
-* currency.tsv:
-	```
-	$, £, € ...
-	```
-
-* width.tsv: fullwidth -> halfwidth char mapping
-	```
-	９ -> 9
-	Ｊ -> J
-	？ -> ?
-	```
-
-* measure/{measure, measure_zh}.tsv:
-	```
-	kg, °C, m², mph ...
-	条，块，支，张，瓶，旦 ...
-	```
-
-* math/math_symbol.tsv: 
-	```
-	+, -, ×, ÷ ...
-	```
-
-* number/{digit, digit_teen, zero}.tsv: helper resources to read Chinese numbers
-
-* erhua/erhua_removal_whitelist.tsv: Whitelist of "儿" that should not be removed during TN
-
-* whitelist/whitelist.tsv: user-defined direct TN mapping
