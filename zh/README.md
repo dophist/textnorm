@@ -79,14 +79,14 @@ B2B -> B to B
 ### Char Removal
 Sometime you may want to remove certain chars like interjections/fillers "啊", "呃" etc
 ```
-呃这个呃啊额我不知道 -> 这个我不知道
+呃这个呃啊我不知道 -> 这个我不知道
 ```
 * customizable via `data/char/removal.tsv`
 
 ### Erhua(儿化音) Removal
 ```
 这儿有只鸟儿 -> 这有只鸟
-这事儿不太好办 -> 这事不太好办
+这事儿好办 -> 这事好办
 儿孙满堂 -> 儿孙满堂
 女儿 -> 女儿
 ```
