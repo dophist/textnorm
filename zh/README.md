@@ -34,7 +34,7 @@
 于5:35:36发射 -> 于五点三十五分三十六秒发射
 ```
 
-### Game score
+### Score
 ```
 比分定格在78:96 -> 比分定格在七十八比九十六
 英格兰跟西班牙踢了个3-2 -> 英格兰跟西班牙踢了个三比二
@@ -58,10 +58,12 @@
 可以打我手机13501234567 -> 可以打我手机一三五零一二三四五六七
 ```
 
-### Erhua Removal
+### Erhua(儿化音) Removal
 ```
-这儿有只鸟儿 -> 这有只鸟
 儿孙满堂 -> 儿孙满堂
+女儿 -> 女儿
+这儿有只鸟儿 -> 这有只鸟
+这事儿不太好办 -> 这事不太好办
 ```
 
 ### Whitelist (customizable direct transformation)
@@ -85,30 +87,33 @@ B2B -> B to B
 
 
 ## 2. Knowledge Resources (data/*)
-* national_standard_2013_mandarin_charset_8105.tsv: national standardized Chinese charset [wiki-通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
+* national_standard_2013_mandarin_charset_8105.tsv: [wiki-通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
 
-* currency.tsv: containing common currency signs
+* currency.tsv:
 	```
 	$, £, € ...
 	```
 
-* width.tsv: containing fullwidth -> halfwidth char mapping
+* width.tsv: fullwidth -> halfwidth char mapping
 	```
 	９ -> 9
 	Ｊ -> J
 	？ -> ?
 	```
 
-* erhua_removal_whitelist.tsv
-* math.tsv
-* measure/measure.tsv: Common unit symbols in Chinese format
-* measure/measure_zh.tsv: Commonly used Chinese character units
-* erhua/erhua.tsv: Whitelist to remove paedophones
-* halfwidth/halfwidth: Fullwidth form to halfwidth
-* money/currency.tsv: Common currency symbols
-* sign/sign.tsv: Transcription of common symbols
-* whitelist/whitelist.tsv: Common abbreviations
-* number/digit.tsv: Chinese numerals one to nine
-* number/zero.tsv: Chinese numerals zero
-* number/digit_teen.tsv: Chinese numerals used in the tens place
+* measure/{measure, measure_zh}.tsv:
+	```
+	kg, °C, m², mph ...
+	条，块，支，张，瓶，旦 ...
+	```
 
+* math/math_symbol.tsv: 
+	```
+	+, -, ×, ÷ ...
+	```
+
+* number/{digit, digit_teen, zero}.tsv: helper resources to read Chinese numbers
+
+* erhua/erhua_removal_whitelist.tsv: Whitelist of "儿" that should not be removed during TN
+
+* whitelist/whitelist.tsv: user-defined direct TN mapping
