@@ -4,7 +4,7 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 class TimeFst(GraphFst):
     '''
-        time { hour: "1" min: "02" sec: "36" }  ->  一点零二分三十六秒
+        time { h: "1" m: "02" s: "36" }  ->  一点零二分三十六秒
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="time", kind="verbalize", deterministic=deterministic)  
@@ -25,16 +25,16 @@ class TimeFst(GraphFst):
         graph_2_digit_zero_none = pynini.cross("0","") + pynini.cross("0","")
         graph_2_digit_zero = pynini.cross("00","零")
 
-        clock_no_sec = pynutil.delete("hour: \"") + (graph_2_digit_time|graph_2_digit_zero|graph_digit) + \
+        clock_no_sec = pynutil.delete("h: \"") + (graph_2_digit_time|graph_2_digit_zero|graph_digit) + \
                         pynutil.insert("点")+ pynutil.delete("\"") + " "\
-                        + pynutil.delete("min: \"") + (graph_2_digit_time) + pynutil.insert("分") + pynutil.delete("\"")
-        clock_no_min = pynutil.delete("hour: \"") + (graph_2_digit_time|graph_2_digit_zero|graph_digit) +\
+                        + pynutil.delete("m: \"") + (graph_2_digit_time) + pynutil.insert("分") + pynutil.delete("\"")
+        clock_no_min = pynutil.delete("h: \"") + (graph_2_digit_time|graph_2_digit_zero|graph_digit) +\
                          pynutil.insert("点")+ pynutil.delete("\"") + " "\
-                        + pynutil.delete("min: \"") + (graph_2_digit_zero_none) + pynutil.delete("\"")
-        clock_with_sec = pynutil.delete("hour: \"") + (graph_2_digit_time|graph_2_digit_zero|graph_digit) + \
+                        + pynutil.delete("m: \"") + (graph_2_digit_zero_none) + pynutil.delete("\"")
+        clock_with_sec = pynutil.delete("h: \"") + (graph_2_digit_time|graph_2_digit_zero|graph_digit) + \
                         pynutil.insert("点")+ pynutil.delete("\"") + " "\
-                        + pynutil.delete("min: \"") + (graph_2_digit_time|graph_2_digit_zero)  + pynutil.insert("分")+\
-                        pynutil.delete("\"") + " " + pynutil.delete("sec: \"") + \
+                        + pynutil.delete("m: \"") + (graph_2_digit_time|graph_2_digit_zero)  + pynutil.insert("分")+\
+                        pynutil.delete("\"") + " " + pynutil.delete("s: \"") + \
                         (graph_2_digit_time) + pynutil.insert("秒") + pynutil.delete("\"")
         clock_graph = clock_no_sec|clock_with_sec|clock_no_min
 

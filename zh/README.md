@@ -60,14 +60,15 @@
 ```
 
 
-### Whitelist (user-defined string replacement)
+### Whitelist
+a set of user-defined hard mapping, i.e. exact-string matching & replacement
 ```
 CEO -> C E O
 GPU -> G P U
 O2O -> O to O
 B2B -> B to B
 ```
-* customizable via `data/whitelist/whitelist.tsv`
+* customizable via `data/whitelist/default.tsv`
 
 ### Char Width Conversion (全角 -> 半角)
 ```

@@ -4,8 +4,8 @@ from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
 from pynini.lib import pynutil
 class TimeFst(GraphFst):
     '''
-        1:02          -> time { hour: "1" min: "02" }
-        1:02:36       -> time { hour: "1" min: "02" sec: "36" }
+        1:02          -> time { h: "1" m: "02" }
+        1:02:36       -> time { h: "1" m: "02" s: "36" }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="time", kind="classify", deterministic=deterministic)
@@ -17,17 +17,19 @@ class TimeFst(GraphFst):
         m = pynini.closure(NEMO_DIGIT, 2, 2)
         s = pynini.closure(NEMO_DIGIT, 1, 2)
 
+        # 5:05, 14:30
         h_m = \
-            pynutil.insert('hour: "') + h + pynutil.insert('"') + \
+            pynutil.insert('h: "') + h + pynutil.insert('"') + \
             pynini.cross(':', ' ') + \
-            pynutil.insert('min: "') + m + pynutil.insert('"')
+            pynutil.insert('m: "') + m + pynutil.insert('"')
 
+        # 1:30:15
         h_m_s = \
-            pynutil.insert('hour: "') + h + pynutil.insert('"') + \
+            pynutil.insert('h: "') + h + pynutil.insert('"') + \
             pynini.cross(':', ' ') + \
-            pynutil.insert('min: "') + m + pynutil.insert('"') + \
+            pynutil.insert('m: "') + m + pynutil.insert('"') + \
             pynini.cross(':', ' ') + \
-            pynutil.insert('sec: "') + s + pynutil.insert('"')
+            pynutil.insert('s: "') + s + pynutil.insert('"')
 
         patterns = h_m | h_m_s
         self.fst = self.add_tokens(patterns).optimize()
