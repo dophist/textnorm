@@ -102,7 +102,6 @@ class ClassifyFst(GraphFst):
             whitelist = WhitelistFst(deterministic=deterministic)
             whitelist_graph = whitelist.fst
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
-
             classify = (
                 pynutil.add_weight(date_graph,        0.4) |
                 pynutil.add_weight(fraction_graph,    0.5) |
@@ -113,7 +112,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist_graph,   0.3) |
                 pynutil.add_weight(number_graph,      1.2) |
                 pynutil.add_weight(math_symbol_graph, 1.5) |
-                pynutil.add_weight(halfwidth_graph,   2.0) |
+                pynutil.add_weight(halfwidth_graph,   0.1) |
                 pynutil.add_weight(erhua_graph,       2.0) |
                 pynutil.add_weight(word_graph,        200)
             )

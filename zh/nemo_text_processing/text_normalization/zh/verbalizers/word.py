@@ -1,28 +1,25 @@
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_CHAR, GraphFst,NEMO_NOT_SPACE
+from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_CHAR, GraphFst,NEMO_NOT_SPACE,NEMO_NOT_QUOTE
 from pynini.lib import pynutil
+from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 class WordFst(GraphFst):
     '''
-        TODO: fix example formatting
-        每个汉字
-        word { word: "你" } - 你
-        word { er_word: "儿" } -""
+        word { word: "你" }      -> 你
+        word { er_word: "儿" }   -> ""
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="word", kind="verbalize", deterministic=deterministic)
         word = pynutil.delete("word: \"") + NEMO_NOT_SPACE + pynutil.delete("\"")
 
-        # TODO: load these from data/char/removal.tsv
-        word_e = pynutil.delete("e_word: \"") + pynutil.delete("呃") + pynutil.delete("\"")
-        word_a = pynutil.delete("a_word: \"") + pynutil.delete("啊") + pynutil.delete("\"")
+        word_removal = pynutil.delete("removal_word: \"") + pynutil.delete(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         er = pynutil.delete("er_word: \"") + pynutil.delete("儿") + pynutil.delete("\"")
-        # TODO: can we make '<' & '>' configurable via data/char/charset_illegal_tags.tsv
-        # a single line with user-defined ltag & rtag, seperated by tab
-        # we can set default ltag = '<', and rtag = '>'
-        word_other = pynutil.delete("other: \"") + pynutil.insert("<") + NEMO_CHAR  + pynutil.insert(">") + pynutil.delete("\"") 
+        with open(get_abs_path("data/char/charset_illegal_tags.tsv"),"r") as f:
+            line = f.readline()
+            ltag = line[0]
+            rtag = line[2]
+        word_other = pynutil.delete("other: \"") + pynutil.insert(ltag) + NEMO_CHAR  + pynutil.insert(rtag) + pynutil.delete("\"") 
         word|=er
-        word|=word_a
-        word|=word_e
+        word|=word_removal
         word|=word_other
         word = self.delete_tokens(word)
         self.fst = word.optimize()

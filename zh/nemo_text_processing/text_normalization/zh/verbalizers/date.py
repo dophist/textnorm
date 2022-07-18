@@ -1,6 +1,6 @@
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, NEMO_NOT_QUOTE ,GraphFst
-from nemo_text_processing.text_normalization.zh.utils import get_abs_path
+from nemo_text_processing.text_normalization.zh.utils import get_abs_path,UNIT_1e01
 from pynini.lib import pynutil
 class DateFst(GraphFst):
     '''
@@ -9,7 +9,6 @@ class DateFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
-        NEMO_TEN = '十'
         date_type0 = pynutil.delete('year: \"') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('\"') 
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         graph_ten = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_teen.tsv")))
@@ -18,7 +17,7 @@ class DateFst(GraphFst):
         graph_year = pynini.closure(graph_digit|graph_zero,2,4)
         graph_digit_no_zero = graph_digit|graph_no_zero
         graph_2_digit_date = (
-             (graph_ten + pynutil.insert(NEMO_TEN) + graph_digit_no_zero)|
+             (graph_ten + pynutil.insert(UNIT_1e01) + graph_digit_no_zero)|
             (graph_no_zero + graph_digit)
         )
 

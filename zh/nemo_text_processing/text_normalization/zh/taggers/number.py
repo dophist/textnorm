@@ -1,6 +1,14 @@
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.zh.utils import get_abs_path
+from nemo_text_processing.text_normalization.zh.utils import (
+    get_abs_path,
+    UNIT_1e01,
+    UNIT_1e02,
+    UNIT_1e03,
+    UNIT_1e04,
+    UNIT_1e08,
+    UNIT_1e12, 
+)
 from pynini.lib import pynutil
 class NumberFst(GraphFst):
     '''
@@ -16,14 +24,6 @@ class NumberFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="number", kind="classify", deterministic=deterministic)
-
-        # TODO: move these to utils
-        UNIT_1e01 = '十'
-        UNIT_1e02 = '百'
-        UNIT_1e03 = '千'
-        UNIT_1e04 = '万'
-        UNIT_1e08 = '亿'
-        UNIT_1e12 = '兆'
 
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
         graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))

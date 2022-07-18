@@ -4,16 +4,12 @@ from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path,load_labels
 class ErhuaRemovalFst(GraphFst):
     '''
-        TODO: fix docstring example formating
-        女儿  -  女儿
-        这儿  - 这
+        女儿  -  erhua { erhua: "女儿" }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="erhua", kind="classify", deterministic=deterministic)
-        whitelist = load_labels(get_abs_path("data/char/erhua_removal_whitelist.tsv"))
-        erhua_graph = "男儿" # TODO: use pynini.union() to avoid this kind of processing
-        for word in whitelist:
-            erhua_graph|=pynini.accep(word[0])
+        whitelist = pynini.string_map(load_labels(get_abs_path("data/char/erhua_removal_whitelist.tsv")))
+        erhua_graph = whitelist       
         erhua_white = pynutil.insert("erhua: \"") + erhua_graph + pynutil.insert("\"")
         erhua_white = self.add_tokens(erhua_white)
         self.fst = erhua_white.optimize()

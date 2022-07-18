@@ -27,14 +27,17 @@ class DateFst(GraphFst):
         month_no_day = pynini.closure(NEMO_DIGIT,1,2)
         month = pynini.closure(NEMO_DIGIT,1,2) + delete_date_sign
         day = pynini.closure(NEMO_DIGIT,1,2)
-
+        # 2012/01/28
         date_type1 = pynutil.insert("year: \"") + year_2_4_digit + pynutil.insert("\"") + insert_space\
                     + pynutil.insert("month: \"") + month + pynutil.insert("\"") + insert_space\
                     + pynutil.insert("day: \"") + day + pynutil.insert("\"")
+        #12/01
         date_type2 = pynutil.insert("year: \"") + year_2_4_digit + pynutil.insert("\"") + insert_space\
                     + pynutil.insert("month: \"") + month_no_day_with_zero + pynutil.insert("\"")
+        #2012/11
         date_type3 = pynutil.insert("year: \"") + year_4_digit + pynutil.insert("\"") + insert_space\
-                    + pynutil.insert("month: \"") + month_no_day + pynutil.insert("\"")
+                   + pynutil.insert("month: \"") + month_no_day + pynutil.insert("\"")
+        #02/05
         date_type4 = pynutil.insert("year: \"") + year_2_digit_with_zero + pynutil.insert("\"") + insert_space\
                     + pynutil.insert("month: \"") + month_no_day + pynutil.insert("\"")
 

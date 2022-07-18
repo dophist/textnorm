@@ -17,6 +17,13 @@ import os
 import pynini
 from pynini.lib import utf8
 
+UNIT_1e01 = '十'
+UNIT_1e02 = '百'
+UNIT_1e03 = '千'
+UNIT_1e04 = '万'
+UNIT_1e08 = '亿'
+UNIT_1e12 = '兆'
+
 def get_abs_path(rel_path):
     """
     Get absolute path
@@ -60,25 +67,15 @@ def augment_labels_with_punct_at_end(labels):
                 res.append([label[0], label[1] + "."] + label[2:])
     return res
 
-
-# def chr_sep(line):
-#     m = '' 
-#     for i,chr in enumerate(line):
-#         if '\u4e00' <= chr <= '\u9fa5' or '\uff01' <= chr <= '\uff5e':
-#             if i+1 < len(line) and ('\u4e00' <= line[i+1] <= '\u9fa5' or '\uff01' <= line[i+1] <= '\uff5e') and i !=0:
-#                 m+=' ' + chr
-#             else:
-#                 m+=' ' + chr + ' '
-            
-#         else:
-#             m+=chr
-#     return m
-
 def inverse_chr_sep(line):
+    f = True
     m = ''
     for i,chr in enumerate(line):
-        if chr != " ":
+        if chr != " " or f==True:
             m+=chr
+            f=False
+        else:
+            f = True
     return m
 
 
