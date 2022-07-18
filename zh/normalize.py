@@ -24,7 +24,7 @@ from typing import Dict, List, Union
 import pynini
 from joblib import Parallel, delayed
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA
-from nemo_text_processing.text_normalization.zh.utils import chr_sep,inverse_chr_sep
+from nemo_text_processing.text_normalization.zh.utils import inverse_chr_sep
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
@@ -56,6 +56,7 @@ class Normalizer:
         whitelist: str = None,
         lm: bool = False,
         post_process: bool = True,
+        erhua_removal:bool = False
     ):
         assert input_case in ["lower_cased", "cased"]
 
@@ -72,12 +73,11 @@ class Normalizer:
             overwrite_cache=overwrite_cache,
             whitelist=whitelist,
         )
-        self.tagger.fst = pynini.cdrewrite(self.tagger.fst,'','',NEMO_SIGMA)
+        # self.tagger.fst = pynini.cdrewrite(self.tagger.fst,'','',NEMO_SIGMA)
 
         self.verbalizer = VerbalizeFinalFst(
             deterministic=deterministic, cache_dir=cache_dir, overwrite_cache=overwrite_cache
         )
-        # self.verbalizer.fst = pynini.cdrewrite(self.verbalizer.fst,'','',NEMO_SIGMA)
         self.parser = TokenParser()
         self.lang = lang
 
@@ -223,7 +223,7 @@ class Normalizer:
         assert (
             len(text.split()) < 500
         ), "Your input is too long. Please split up the input into sentences, or strings with fewer than 500 words"
-        # text = '，2023'
+        # text = "比分定格在78:96"
         # text = chr_sep(text)
         original_text = text
         if punct_pre_process:
@@ -253,8 +253,9 @@ class Normalizer:
                 raise ValueError(f"No permutations were generated from tokens {s}")
             output += ' ' + self.select_verbalizer(verbalizer_lattice)
 
-        output = SPACE_DUP.sub(' ', output[1:])
         output = inverse_chr_sep(output)
+        output = SPACE_DUP.sub(' ', output[1:])
+        
         return output
 
     def _permute(self, d: OrderedDict) -> List[str]:
@@ -433,11 +434,11 @@ if __name__ == "__main__":
         whitelist=whitelist,
         lang=args.language,
     )
-    text = ""
+    # text = ""
     if args.input_string:
         print(
             normalizer.normalize(
-                text,
+                args.input_string,
                 verbose=args.verbose,
                 punct_pre_process=args.punct_pre_process,
                 punct_post_process=args.punct_post_process,
