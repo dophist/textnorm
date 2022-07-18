@@ -104,3 +104,4 @@ _**If enabled**_, non-standard chars(out of charset) will be tagged with '<>'
 * you can extend legit chars via `data/char/charset_extension.tsv`
 
 ## How To Use
+* python normalize.py --text "your text"
