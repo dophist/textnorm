@@ -11,8 +11,8 @@ class DateFst(GraphFst):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
         date_type0 = pynutil.delete('year: \"') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('\"') 
         graph_digit = pynini.string_file(get_abs_path("data/number/digit.tsv"))
-        graph_ten = pynini.invert(pynini.string_file(get_abs_path("data/number/digit_teen.tsv")))
-        graph_zero = pynini.invert(pynini.string_file(get_abs_path("data/number/zero.tsv")))
+        graph_ten = pynini.string_file(get_abs_path("data/number/digit_teen.tsv"))
+        graph_zero = pynini.string_file(get_abs_path("data/number/zero.tsv"))
         graph_no_zero = pynini.cross("0","")
         graph_year = pynini.closure(graph_digit|graph_zero,2,4)
         graph_digit_no_zero = graph_digit|graph_no_zero

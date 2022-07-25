@@ -16,7 +16,7 @@ class TimeFst(GraphFst):
         m = time_tens + time_digit
         s = (time_tens + time_digit)|time_digit
 
-        delete_colon = pynini.cross(':', ' ')|pynini.cross('：', ' ')
+        delete_colon = pynini.cross(':', ' ')
         # 5:05, 14:30
         h_m = \
             pynutil.insert('h: \"') + h + pynutil.insert('\"') + \

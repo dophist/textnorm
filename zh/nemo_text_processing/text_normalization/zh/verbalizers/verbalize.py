@@ -9,7 +9,7 @@ from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFs
 from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
 from nemo_text_processing.text_normalization.zh.verbalizers.erhua_removal import ErhuaRemovalFst
-from nemo_text_processing.text_normalization.zh.verbalizers.halfwidth import HalfwidthFst
+# from nemo_text_processing.text_normalization.zh.verbalizers.halfwidth import HalfwidthFst
 from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import WhitelistFst
 class VerbalizeFst(GraphFst):
     """
@@ -54,12 +54,11 @@ class VerbalizeFst(GraphFst):
         erhua = ErhuaRemovalFst(deterministic=deterministic)
         erhua_graph = erhua.fst
 
-        halfwidth = HalfwidthFst(deterministic=deterministic)
-        halfwidth_graph = halfwidth.fst
+        # halfwidth = HalfwidthFst(deterministic=deterministic)
+        # halfwidth_graph = halfwidth.fst
         
         whitelist = WhitelistFst(deterministic=deterministic)
         whitelist_graph = whitelist.fst
-
         graph = ( 
         	date_graph
             |number_graph
@@ -71,7 +70,6 @@ class VerbalizeFst(GraphFst):
             |measure_graph
             |time_graph
             |erhua_graph
-            |halfwidth_graph
             |whitelist_graph
         )
         self.fst = graph

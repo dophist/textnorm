@@ -101,6 +101,9 @@ class ClassifyFst(GraphFst):
 
             whitelist = WhitelistFst(deterministic=deterministic)
             whitelist_graph = whitelist.fst
+
+            preprocess = word.word_removal|halfwidth.graph_halfwidth
+            preprocess_graph = pynini.cdrewrite(preprocess,"","",NEMO_SIGMA)
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
             classify = (
                 pynutil.add_weight(date_graph,        0.4) |
@@ -112,7 +115,6 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(whitelist_graph,   0.3) |
                 pynutil.add_weight(number_graph,      1.2) |
                 pynutil.add_weight(math_symbol_graph, 1.5) |
-                pynutil.add_weight(halfwidth_graph,   0.1) |
                 pynutil.add_weight(erhua_graph,       2.0) |
                 pynutil.add_weight(word_graph,        200)
             )
@@ -120,4 +122,4 @@ class ClassifyFst(GraphFst):
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             graph = token
             graph = pynini.cdrewrite(graph.optimize(),"","",NEMO_SIGMA)
-            self.fst = graph
+            self.fst = pynini.compose(preprocess_graph, graph)

@@ -1,5 +1,5 @@
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst,NEMO_DIGIT
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 class MathSymbolFst(GraphFst):

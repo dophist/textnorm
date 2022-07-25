@@ -11,6 +11,6 @@ class MeasureFst(GraphFst):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
         measure = pynini.string_file(get_abs_path("data/measure/measure.tsv"))
         measure_zh = pynini.string_file(get_abs_path("data/measure/measure_zh.tsv"))
-        graph_measure = pynutil.insert("measure: \"") + NumberFst().graph_number + (measure|measure_zh) + pynutil.insert("\"")
+        graph_measure = pynutil.insert("measure: \"") + NumberFst().graph_number + pynini.closure(" ") + (measure|measure_zh) + pynutil.insert("\"")
         graph_measure = self.add_tokens(graph_measure)
         self.fst = graph_measure.optimize()
