@@ -45,7 +45,10 @@
 
 ### Money
 ```
-售价￥1.02 -> 售价一点零二元
+价格是￥13.5 -> 价格是十三点五元
+价格是$13.5 -> 价格是十三点五美元
+价格是A$13.5 -> 价格是十三点五澳元
+价格是HKD13.5 -> 价格是十三点五港元
 ```
 
 ### Measure
@@ -92,8 +95,7 @@ Sometime you may want to remove certain chars like interjections/fillers "啊", 
 ```
 这儿有只鸟儿 -> 这有只鸟
 这事儿好办 -> 这事好办
-儿孙满堂 -> 儿孙满堂
-女儿 -> 女儿
+我儿子喜欢这地儿 -> 我儿子喜欢这地
 ```
 * customizable via `data/char/erhua_removal_whitelist.tsv` to avoid unwanted removals.
 
