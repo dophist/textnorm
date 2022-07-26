@@ -1,5 +1,5 @@
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst,insert_space,NEMO_DIGIT
+from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst,insert_space,NEMO_DIGIT,NEMO_CHAR
 from pynini.lib import pynutil
 class FractionFst(GraphFst):
     '''

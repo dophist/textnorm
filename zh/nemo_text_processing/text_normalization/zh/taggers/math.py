@@ -4,7 +4,7 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 class MathSymbolFst(GraphFst):
     '''
-        +  -> sign { sign: "+" }
+        +  -> sign { sign: "加" }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="sign", kind="classify", deterministic=deterministic)

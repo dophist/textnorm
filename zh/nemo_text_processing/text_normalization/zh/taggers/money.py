@@ -5,7 +5,7 @@ from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
 from pynini.lib import pynutil
 class MoneyFst(GraphFst):
     '''
-        ￥1.25 --> money { cur: "元" num: "1.5" }
+        ￥1.25 --> money { cur: "元" num: "一点五" }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="money", kind="classify", deterministic=deterministic)

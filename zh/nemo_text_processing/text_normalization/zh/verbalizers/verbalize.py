@@ -1,7 +1,7 @@
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst
 from nemo_text_processing.text_normalization.zh.verbalizers.number import NumberFst
-from nemo_text_processing.text_normalization.zh.verbalizers.word import WordFst
+from nemo_text_processing.text_normalization.zh.verbalizers.char import CharFst
 from nemo_text_processing.text_normalization.zh.verbalizers.fraction import FractionFst
 from nemo_text_processing.text_normalization.zh.verbalizers.percent import PercentFst
 from nemo_text_processing.text_normalization.zh.verbalizers.math import MathSymbolFst
@@ -30,8 +30,8 @@ class VerbalizeFst(GraphFst):
         number = NumberFst(deterministic=deterministic)
         number_graph = number.fst
         
-        word = WordFst(deterministic=deterministic)
-        word_graph = word.fst
+        char = CharFst(deterministic=deterministic)
+        char_graph = char.fst
 
         fraction = FractionFst(deterministic=deterministic)
         fraction_graph = fraction.fst
@@ -54,8 +54,6 @@ class VerbalizeFst(GraphFst):
         erhua = ErhuaRemovalFst(deterministic=deterministic)
         erhua_graph = erhua.fst
 
-        # halfwidth = HalfwidthFst(deterministic=deterministic)
-        # halfwidth_graph = halfwidth.fst
         
         whitelist = WhitelistFst(deterministic=deterministic)
         whitelist_graph = whitelist.fst
@@ -63,7 +61,7 @@ class VerbalizeFst(GraphFst):
         	date_graph
             |number_graph
             |fraction_graph
-            |word_graph
+            |char_graph
             |math_symbol_graph
             |percent_graph
             |money_graph

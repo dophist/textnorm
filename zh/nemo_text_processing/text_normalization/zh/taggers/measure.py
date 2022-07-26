@@ -2,12 +2,11 @@ import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst, delete_space
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path,load_labels
 from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
+from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
 from pynini.lib import pynutil
 class MeasureFst(GraphFst):
     '''
-        TODO: the output of following case is not what this tagger actually produces
-        also make sure to fix this kind of inconsistency in other places.
-        1kg  -> measure { measure: "1kg" }
+        1kg  -> measure { measure: "一千克" }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)

@@ -3,7 +3,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst,NEMO
 from pynini.lib import pynutil
 class MoneyFst(GraphFst):
     '''
-        money { num: "1.5" cur: "元" }  ->  一点五元
+        money { num: "一点五" cur: "元" }  ->  一点五元
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)   

@@ -11,7 +11,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
 )
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
-from nemo_text_processing.text_normalization.zh.taggers.word import WordFst
+from nemo_text_processing.text_normalization.zh.taggers.char import CharFst
 from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
 from nemo_text_processing.text_normalization.zh.taggers.percent import PercentFst
 from nemo_text_processing.text_normalization.zh.taggers.math import MathSymbolFst
@@ -56,8 +56,7 @@ class ClassifyFst(GraphFst):
             os.makedirs(cache_dir, exist_ok=True)
             whitelist_file = os.path.basename(whitelist) if whitelist else ""
             far_file = os.path.join(
-                # TODO: check other places, make sure this kind of 'en' is fixed
-                cache_dir, f"en_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far"
+                cache_dir, f"zh_tn_{deterministic}_deterministic_{input_case}_{whitelist_file}_tokenize.far"
             )
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
@@ -72,8 +71,8 @@ class ClassifyFst(GraphFst):
             number = NumberFst(deterministic=deterministic)
             number_graph = number.fst
 
-            word = WordFst(deterministic=deterministic)
-            word_graph = word.fst
+            char = CharFst(deterministic=deterministic)
+            char_graph = char.fst
 
             fraction = FractionFst(deterministic=deterministic)
             fraction_graph = fraction.fst
@@ -102,8 +101,8 @@ class ClassifyFst(GraphFst):
             whitelist = WhitelistFst(deterministic=deterministic)
             whitelist_graph = whitelist.fst
 
-            preprocess = word.word_removal|halfwidth.graph_halfwidth
-            preprocess_graph = pynini.cdrewrite(preprocess,"","",NEMO_SIGMA)
+            preprocess = char.char_removal|halfwidth.graph_halfwidth
+            preprocess_graph = pynini.cdrewrite(preprocess.optimize(),"","",NEMO_SIGMA)
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
             classify = (
                 pynutil.add_weight(date_graph,        0.4) |
@@ -116,7 +115,7 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(number_graph,      1.2) |
                 pynutil.add_weight(math_symbol_graph, 1.5) |
                 pynutil.add_weight(erhua_graph,       2.0) |
-                pynutil.add_weight(word_graph,        200)
+                pynutil.add_weight(char_graph,        200)
             )
 
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")

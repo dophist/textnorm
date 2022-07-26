@@ -4,7 +4,7 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
 class MeasureFst(GraphFst):
     '''
-        measure { measure: "1kg" }  ->  一千克
+        measure { measure: "一千克" }  ->  一千克
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="measure", kind="verbalize", deterministic=deterministic)   
