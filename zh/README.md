@@ -11,6 +11,7 @@
 ```
 总量的1/5以上 -> 总量的五分之一以上
 相当于头发丝的1/16 -> 相当于头发丝的十六分之一
+3/2是一个假分数 -> 二分之三是一个假分数
 ```
 
 ### Percentage
@@ -35,10 +36,11 @@
 8:00 a.m. 准时开会 -> 八点 a m 准时开会
 ```
 
-### Score
+### Math
 ```
 比分定格在78:96 -> 比分定格在七十八比九十六
-英格兰跟西班牙踢了个3-2 -> 英格兰跟西班牙踢了个三比二
+计算-2的绝对值是2 -> 计算负二的绝对值是二
+±2的平方都是4 -> 正负二的平方都是四
 ```
 
 ### Money
@@ -57,6 +59,7 @@
 ### Number series (phone, mobile numbers)
 ```
 可以打我手机13501234567 -> 可以打我手机一三五零一二三四五六七
+可以拨打12306来咨询 -> 可以拨打一二三零六来咨询
 ```
 
 
@@ -73,6 +76,7 @@ B2B -> B to B
 ### Char Width Conversion (全角 -> 半角)
 ```
 苹果ＣＥＯ宣布发布新ＩＰＨＯＮＥ -> 苹果CEO宣布发布新IPHONE
+他说：“我们已经吃过了！”。 -> 他说:"我们已经吃过了!".
 ```
 * covers English letters, digits, punctuations and some symbols
 * the complete mapping table `data/char/fullwidth_to_halfwidth.tsv`
