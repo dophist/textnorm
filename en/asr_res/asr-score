@@ -6,10 +6,14 @@ import sys
 import argparse
 import json
 import logging
+import pynini
+ 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO, format='[%(levelname)s] %(message)s')
 
 DEBUG = None
 
+
+    
 def GetEditType(ref_token, hyp_token):
     if ref_token == None and hyp_token != None:
         return 'I'
@@ -30,29 +34,68 @@ class AlignmentArc:
         self.hyp = hyp
         self.edit_type = GetEditType(ref, hyp)
 
-def similarity_score_function(ref_token, hyp_token):
-    return 0 if (ref_token == hyp_token) else -1.0
-    
-def replace_similarity_score_function(ref_token, hyp_token):
-    return 
 
-def ref_combine_similarity_score_function(ref_token1, ref_token2, hyp_token):
-    return 0 if (ref_token1 + ref_token2 == hyp_token or ref_token1 + '-' + ref_token2 == hyp_token) else -3.0
+class ScoreCalculator:
+    def __init__(self):
+        self.convert_dict = {'IS':'\'S','HAS':'\'S','HAVE':'\'VE','WILL':'\'LL','AM':'\'M','ARE':'\'RE','WOULD':'\'D','HAD':'\'D'}
+        self.interjection = ['UMM','HUM','HMM','UH','AH','UHH','EH','ER','UM','HUH','YAY','OOH']
+        self.substitution_dict = {}
+        with open('test_norm/data/word.tsv','r') as f:
+            lines = f.readlines()
+            for line in lines:
+                key, value = line.upper().strip().split('\t')
+                self.substitution_dict[key] = value
 
-def hyp_combine_similarity_score_function(ref_token, hyp_token1, hyp_token2):
-    return 0 if (ref_token == hyp_token1 + hyp_token2 or ref_token == hyp_token1 + '-' + hyp_token2) else -3.0
 
-def ref_combine_similarity_score_function_2(ref_token1, ref_token2, ref_token3, hyp_token):
-    return 0 if (ref_token1 + ref_token2 + ref_token3 == hyp_token or ref_token1 + '-' + ref_token2 + '-' + ref_token3 == hyp_token) else -4.0
+    def similarity_score_function(self, ref_token, hyp_token):
+        return 0 if (ref_token == hyp_token) else -1.0
 
-def hyp_combine_similarity_score_function_2(ref_token, hyp_token1, hyp_token2, hyp_token3):
-    return 0 if (ref_token == hyp_token1 + hyp_token2 + hyp_token3 or ref_token == hyp_token1 + '-' + hyp_token2 + '-' + hyp_token3) else -4.0
 
-def insertion_score_function(token):
-    return -1.0
+    def ref_combine_similarity_score_function(self, ref, hyp_token):
+        length = len(ref)
+        hyp_token = hyp_token.replace('-','')
+        hyp_token = hyp_token.replace('N\'T','NOT')
+        cstr = ref[length - 1]
 
-def deletion_score_function(token):
-    return -1.0
+        if cstr in self.convert_dict.keys():
+            cstr = self.convert_dict[cstr]
+
+        for i in range(1,length):
+            cstr = ref[length - i - 1] + cstr
+            if cstr == hyp_token:
+                return 0, i
+            elif len(cstr) > len(hyp_token):
+                return -length - 1, i 
+        return -length - 1,0 
+
+    def hyp_combine_similarity_score_function(self, ref_token, hyp):
+        length = len(hyp)
+        ref_token = ref_token.replace('-','')
+        ref_token = ref_token.replace('N\'T','NOT')
+        cstr = hyp[length - 1]
+
+        if cstr in self.convert_dict.keys():
+            cstr = self.convert_dict[cstr]
+            
+        for i in range(1,length):
+            cstr = hyp[length - i - 1] + cstr
+            if cstr == ref_token:
+                return 0, i
+            elif len(cstr) > len(ref_token):
+                return -length - 1, i
+        return -length - 1,0
+
+    def insertion_score_function(self, token):
+        if token in self.interjection:
+            return 0
+        else:
+            return -1.0
+
+    def deletion_score_function(self, token):
+        if token in self.interjection:
+            return 0
+        else:
+            return -1.0
 
 def EditDistancePLus(
         ref,
@@ -73,6 +116,7 @@ def EditDistancePLus(
                 print(F'[{r},{h}]:{S[r][h].score:4.3f}:({S[r][h].prev_r},{S[r][h].prev_h}) ', end='', file=fstream)
             print(file=fstream)
 
+    SC = ScoreCalculator()
     R = len(ref) + 1
     H = len(hyp) + 1
 
@@ -88,13 +132,13 @@ def EditDistancePLus(
 
     # initialize REF axis
     for r in range(1, R):
-        S[r][0].score = S[r-1][0].score + deletion_score_function(ref[r-1])
+        S[r][0].score = S[r-1][0].score + SC.deletion_score_function(ref[r-1])
         S[r][0].prev_r = r-1
         S[r][0].prev_h = 0
 
     # initialize HYP axis
     for h in range(1, H):
-        S[0][h].score = S[0][h-1].score + insertion_score_function(hyp[h-1])
+        S[0][h].score = S[0][h-1].score + SC.insertion_score_function(hyp[h-1])
         S[0][h].prev_r = 0
         S[0][h].prev_h = h-1
 
@@ -103,21 +147,21 @@ def EditDistancePLus(
 
     for r in range(1, R):
         for h in range(1, H):
-            sub_or_cor_score = similarity_score_function(ref[r-1], hyp[h-1])
+            sub_or_cor_score = SC.similarity_score_function(ref[r-1], hyp[h-1])
             new_score = S[r-1][h-1].score + sub_or_cor_score
             if new_score >= S[r][h].score:
                 S[r][h].score = new_score
                 S[r][h].prev_r = r-1
                 S[r][h].prev_h = h-1
 
-            del_score = deletion_score_function(ref[r-1])
+            del_score = SC.deletion_score_function(ref[r-1])
             new_score = S[r-1][h].score + del_score
             if new_score >= S[r][h].score:
                 S[r][h].score = new_score
                 S[r][h].prev_r = r - 1
                 S[r][h].prev_h = h
                 
-            ins_score = insertion_score_function(hyp[h-1])
+            ins_score = SC.insertion_score_function(hyp[h-1])
             new_score = S[r][h-1].score + ins_score
             if new_score >= S[r][h].score:
                 S[r][h].score = new_score
@@ -125,36 +169,21 @@ def EditDistancePLus(
                 S[r][h].prev_h = h-1
                 
             if h > 1:
-                sub_or_cor_hyp_score = hyp_combine_similarity_score_function(ref[r-1],hyp[h-2],hyp[h-1])
-                new_score = S[r-1][h-2].score + sub_or_cor_hyp_score
+                sub_or_cor_hyp_score, num = SC.hyp_combine_similarity_score_function(ref[r-1],hyp[:h])
+                new_score = S[r-1][h-num-1].score + sub_or_cor_hyp_score
                 if new_score >= S[r][h].score:
                     S[r][h].score = new_score
                     S[r][h].prev_r = r-1
-                    S[r][h].prev_h = h-2
+                    S[r][h].prev_h = h-num-1
                     
             if r > 1:
-                sub_or_cor_ref_score = ref_combine_similarity_score_function(ref[r-2],ref[r-1],hyp[h-1])
-                new_score = S[r-2][h-1].score + sub_or_cor_ref_score
+                sub_or_cor_ref_score, num = SC.ref_combine_similarity_score_function(ref[:r],hyp[h-1])
+                new_score = S[r-num-1][h-1].score + sub_or_cor_ref_score
                 if new_score >= S[r][h].score:
                     S[r][h].score = new_score
-                    S[r][h].prev_r = r-2
+                    S[r][h].prev_r = r-num-1
                     S[r][h].prev_h = h-1
             
-            if h > 2:
-                sub_or_cor_hyp_score = hyp_combine_similarity_score_function_2(ref[r-1],hyp[h-3],hyp[h-2],hyp[h-1])
-                new_score = S[r-1][h-3].score + sub_or_cor_hyp_score
-                if new_score >= S[r][h].score:
-                    S[r][h].score = new_score
-                    S[r][h].prev_r = r-1
-                    S[r][h].prev_h = h-3
-            
-            if r > 2:
-                sub_or_cor_ref_score = ref_combine_similarity_score_function_2(ref[r-3],ref[r-2],ref[r-1],hyp[h-1])
-                new_score = S[r-3][h-1].score + sub_or_cor_ref_score
-                if new_score >= S[r][h].score:
-                    S[r][h].score = new_score
-                    S[r][h].prev_r = r-3
-                    S[r][h].prev_h = h-1
             
 
     best_score = S[R-1][H-1].score
@@ -180,19 +209,17 @@ def EditDistancePLus(
             arc = AlignmentArc(src, dst, ref[prev_r], hyp[prev_h])
         elif (r == prev_r + 1 and h == prev_h): # Deletion
             arc = AlignmentArc(src, dst, ref[prev_r], None)
+            if ref[prev_r] in SC.interjection:
+                arc.edit_type = 'DC'
         elif (r == prev_r and h == prev_h + 1): # Insertion
             arc = AlignmentArc(src, dst, None, hyp[prev_h])
-        elif (r == prev_r + 1 and h == prev_h + 2): # CombineSub
-            arc = AlignmentArc(src, dst, ref[prev_r], hyp[prev_h] + hyp[prev_h + 1])
+            if hyp[prev_h] in SC.interjection:
+                arc.edit_type = 'IC'
+        elif (r == prev_r + 1 and h > prev_h + 1): # CombineSub
+            arc = AlignmentArc(src, dst, ref[prev_r], ('').join(hyp[prev_h:h]))
             arc.edit_type = 'CC'
-        elif (r == prev_r + 2 and h == prev_h + 1): # CombineSub
-            arc = AlignmentArc(src, dst, ref[prev_r] + ref[prev_r + 1], hyp[prev_h])
-            arc.edit_type = 'CC'
-        elif (r == prev_r + 1 and h == prev_h + 3): # CombineSub
-            arc = AlignmentArc(src, dst, ref[prev_r], hyp[prev_h] + hyp[prev_h + 1] + hyp[prev_h + 1])
-            arc.edit_type = 'CC'
-        elif (r == prev_r + 3 and h == prev_h + 1): # CombineSub
-            arc = AlignmentArc(src, dst, ref[prev_r] + ref[prev_r + 1] + ref[prev_r + 2], hyp[prev_h])
+        elif (r > prev_r + 1 and h == prev_h + 1): # CombineSub
+            arc = AlignmentArc(src, dst, ('').join(ref[prev_r:r]), hyp[prev_h])
             arc.edit_type = 'CC'
         else:
             raise RuntimeError
@@ -246,7 +273,7 @@ def PrettyPrintAlignment(alignment, stream = sys.stderr):
     print(E, file=stream)
 
 def CountEdits(alignment):
-    c, s, i, d, cc = 0, 0, 0, 0, 0
+    c, s, i, d, cc, dc, ic = 0, 0, 0, 0, 0, 0, 0
     for arc in alignment:
         if arc.edit_type == 'C':
             c += 1
@@ -258,12 +285,16 @@ def CountEdits(alignment):
             d += 1
         elif arc.edit_type == 'CC':
             cc += 1
+        elif arc.edit_type == 'DC':
+            dc += 1
+        elif arc.edit_type == 'IC':
+            ic += 1
         else:
             raise RuntimeError
-    return (c, s, i, d, cc)
+    return (c, s, i, d, cc, dc, ic)
 
-def ComputeTokenErrorRate(c, s, i, d, cc):
-    return 100.0 * (s + d + i) / (s + d + c + cc)
+def ComputeTokenErrorRate(c, s, i, d, cc, dc, ic):
+    return 100.0 * (s + d + i) / (s + d + c + cc + dc)
 
 def ComputeSentenceErrorRate(num_err_utts, num_utts):
     assert(num_utts != 0)
@@ -282,6 +313,8 @@ class EvaluationResult:
         self.I = 0
         self.D = 0
         self.CC = 0
+        self.DC = 0
+        self.IC = 0
         self.token_error_rate = 0.0
 
         self.num_utts_with_error = 0
@@ -314,9 +347,9 @@ class EvaluationResult:
             F'sentence_error_rate: {self.sentence_error_rate:.2f}%\n'
             F'token_error_rate: {self.token_error_rate:.2f}%\n'
             F'token_stats:\n'
-            F'  - tokens:{self.C + self.S + self.D:>7}\n'
+            F'  - tokens:{self.C + self.S + self.D + self.DC + self.CC:>7}\n'
             F'  - edits: {self.S + self.I + self.D:>7}\n'
-            F'  - cor:   {self.C:>7}\n'
+            F'  - cor:   {self.C + self.CC + self.IC + self.DC:>7}\n'
             F'  - sub:   {self.S:>7}\n'
             F'  - ins:   {self.I:>7}\n'
             F'  - del:   {self.D:>7}\n'
@@ -404,8 +437,8 @@ if __name__ == '__main__':
                 tokenize_text(hyp.text, args.tokenizer)
             )
             
-            c, s, i, d, cc = CountEdits(alignment)
-            utt_ter = ComputeTokenErrorRate(c, s, i, d, cc)
+            c, s, i, d, cc, dc, ic = CountEdits(alignment)
+            utt_ter = ComputeTokenErrorRate(c, s, i, d, cc, dc, ic)
 
             # utt-level evaluation result
             print(F'{{"uid":{uid}, "score":{score}, "ter":{utt_ter:.2f}, "cor":{c}, "sub":{s}, "ins":{i}, "del":{d}}}', file=fo)
@@ -416,12 +449,14 @@ if __name__ == '__main__':
             r.I += i
             r.D += d
             r.CC += cc
+            r.DC += dc
+            r.IC += ic
             if utt_ter > 0:
                 r.num_utts_with_error += 1
 
         # corpus level evaluation result
         r.sentence_error_rate = ComputeSentenceErrorRate(r.num_utts_with_error, r.num_eval_utts)
-        r.token_error_rate = ComputeTokenErrorRate(r.C, r.S, r.I, r.D, r.CC)
+        r.token_error_rate = ComputeTokenErrorRate(r.C, r.S, r.I, r.D, r.CC, r.DC, r.IC)
 
         print(r.to_summary(), file=fo)
 
