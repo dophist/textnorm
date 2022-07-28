@@ -9,13 +9,14 @@ class HalfwidthFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="halfwidth", kind="classify", deterministic=deterministic)
-        halfwidth = pynini.string_file(get_abs_path("data/char/fullwidth_to_halfwidth.tsv"))
-        self.graph_halfwidth = halfwidth
-        graph_halfwidth = (
+
+        fullwidth_to_halfwidth = pynini.string_file(get_abs_path("data/char/fullwidth_to_halfwidth.tsv"))
+        self.graph_halfwidth = fullwidth_to_halfwidth 
+        graph = (
             pynutil.insert("halfwidth: \"") 
-            + halfwidth 
+            + fullwidth_to_halfwidth 
             + pynutil.insert("\"")
         )
-        graph_halfwidth = self.add_tokens(graph_halfwidth)
-        self.fst = graph_halfwidth.optimize()
+
+        self.fst = self.add_tokens(graph).optimize()
         

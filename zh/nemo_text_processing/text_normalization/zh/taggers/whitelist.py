@@ -8,11 +8,13 @@ class WhitelistFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
+
         whitelist = pynini.string_file(get_abs_path("data/whitelist/default.tsv"))
-        white = (
+
+        graph = (
             pynutil.insert("whitelist: \"") 
             + whitelist 
             + pynutil.insert("\"")
         )
-        white = self.add_tokens(white)
-        self.fst = white.optimize()
+
+        self.fst = self.add_tokens(graph).optimize()

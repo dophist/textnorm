@@ -7,9 +7,10 @@ class FractionFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)
+
         numerator = pynini.closure(NEMO_DIGIT,1) + pynutil.delete('/')
         denominator = pynini.closure(NEMO_DIGIT,1)
-        frac_graph = (
+        graph = (
             pynutil.insert("numerator: \"") 
             + numerator 
             + pynutil.insert("\"") + insert_space 
@@ -18,6 +19,4 @@ class FractionFst(GraphFst):
             + pynutil.insert("\"") 
         )
 
-        frac_graph = self.add_tokens(frac_graph)
-        self.fst = frac_graph.optimize()
-
+        self.fst = self.add_tokens(graph).optimize()

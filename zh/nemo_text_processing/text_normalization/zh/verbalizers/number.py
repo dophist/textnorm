@@ -3,14 +3,15 @@ from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst,NEMO
 from pynini.lib import pynutil
 class NumberFst(GraphFst):
     '''
-        number { number: "123"}  ->  一二三
+        number { number: "一二三"}  ->  一二三
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="number", kind="verbalize", deterministic=deterministic)
-        number_graph = (
+
+        graph = (
             pynutil.delete('number: \"') 
             + pynini.closure(NEMO_NOT_QUOTE) 
             + pynutil.delete('\"') 
         )
-        delete_tokens = self.delete_tokens(number_graph)
-        self.fst = delete_tokens.optimize()
+
+        self.fst = self.delete_tokens(graph).optimize()

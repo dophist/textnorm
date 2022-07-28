@@ -17,7 +17,7 @@ class DateFst(GraphFst):
         graph_year = pynini.closure(graph_digit|graph_zero,2,4)
         graph_digit_no_zero = graph_digit|graph_no_zero
         graph_2_digit_date = (
-             (graph_ten + pynutil.insert(UNIT_1e01) + graph_digit_no_zero)|
+            (graph_ten + pynutil.insert(UNIT_1e01) + graph_digit_no_zero) |
             (graph_no_zero + graph_digit)
         )
 
@@ -28,6 +28,6 @@ class DateFst(GraphFst):
         date_type2 = pynutil.delete("year: \"") + graph_year + pynutil.insert("年") + pynutil.delete("\"") + " "\
                     + pynutil.delete("month: \"") + graph_2_digit_date + pynutil.insert("月") + pynutil.delete("\"")
 
-        graoh_date = date_type0|date_type1|date_type2
-        delete_tokens = self.delete_tokens(graoh_date)
-        self.fst = delete_tokens.optimize()
+        graph = date_type0 | date_type1 | date_type2
+
+        self.fst = self.delete_tokens(graph).optimize()

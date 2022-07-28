@@ -14,10 +14,12 @@ class WordFst(GraphFst):
 
         # word_removal = pynutil.delete("removal_word: \"") + pynutil.delete(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         er = pynutil.delete("er_word: \"") + pynutil.delete("儿") + pynutil.delete("\"")
+
         with open(get_abs_path("data/char/charset_illegal_tags.tsv"),"r") as f:
-            line = f.readline()
-            ltag = line[0]
-            rtag = line[2]
+            tags = f.readline().split('\t')
+            assert(len(tags) == 2)
+            ltag, rtag = tags
+
         word_other = pynutil.delete("other: \"") + pynutil.insert(ltag) + NEMO_CHAR  + pynutil.insert(rtag) + pynutil.delete("\"") 
         word|=er
         # word|=word_removal

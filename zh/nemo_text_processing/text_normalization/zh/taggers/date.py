@@ -64,12 +64,12 @@ class DateFst(GraphFst):
             + pynutil.insert("month: \"") + month_no_day + pynutil.insert("\"")
         )
         #add your date type as date_typex here.
-        date_graph = (
+        graph = (
             date_type0   |
             date_type1   |
             date_type2   |
             date_type3   |
             date_type4
         )
-        date_graph = self.add_tokens(date_graph)
-        self.fst = date_graph.optimize()
+
+        self.fst = self.add_tokens(graph).optimize()

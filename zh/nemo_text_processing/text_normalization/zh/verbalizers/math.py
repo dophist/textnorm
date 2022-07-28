@@ -8,11 +8,11 @@ class MathSymbolFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="sign", kind="verbalize", deterministic=deterministic)
-        sign = (
+
+        graph = (
             pynutil.delete('sign: \"') 
             + pynini.closure(NEMO_NOT_QUOTE) 
             + pynutil.delete('\"') 
         )
-        graph_sign = sign
-        delete_tokens = self.delete_tokens(graph_sign)
-        self.fst = delete_tokens.optimize()
+
+        self.fst = self.delete_tokens(graph).optimize()

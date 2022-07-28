@@ -36,8 +36,6 @@ class TimeFst(GraphFst):
                 + pynutil.delete("m: \"") + m + pynutil.insert("分")+ pynutil.delete("\"") + \
                 " " + \
                 pynutil.delete("s: \"") + (graph_2_digit_time) + pynutil.insert("秒") + pynutil.delete("\"")
-        clock_graph = h_m|h_m_s|h_00
+        graph = h_m|h_m_s|h_00
 
-        graph_time = clock_graph
-        graph_time = self.delete_tokens(graph_time)
-        self.fst = graph_time.optimize()
+        self.fst = self.delete_tokens(graph).optimize()

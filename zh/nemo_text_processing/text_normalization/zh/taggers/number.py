@@ -10,6 +10,7 @@ from nemo_text_processing.text_normalization.zh.utils import (
     UNIT_1e12, 
 )
 from pynini.lib import pynutil
+
 class NumberFst(GraphFst):
     '''
         self.graph_number:
@@ -116,10 +117,3 @@ class NumberFst(GraphFst):
             pynutil.insert("number: \"") + graph_numstring + pynutil.insert("\"")
         )
         self.fst = graph_numstring.optimize()
-        
-        
-        
-
-
-
-

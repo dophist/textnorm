@@ -8,12 +8,12 @@ class ErhuaRemovalFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="erhua", kind="classify", deterministic=deterministic)
+
         whitelist = pynini.string_file(get_abs_path("data/char/erhua_removal_whitelist.tsv"))
-     
-        erhua_white = (
+        graph = (
             pynutil.insert("erhua: \"") 
             + whitelist 
             + pynutil.insert("\"")
         )
-        erhua_white = self.add_tokens(erhua_white)
-        self.fst = erhua_white.optimize()
+
+        self.fst = self.add_tokens(graph).optimize()

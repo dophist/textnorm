@@ -8,8 +8,9 @@ class FractionFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="fraction", kind="verbalize", deterministic=deterministic)   
+
         denominator = pynutil.delete("denominator: \"") + NumberFst().graph_number + pynutil.delete("\"")
         numerator = pynutil.delete("numerator: \"") + NumberFst().graph_number + pynutil.delete("\"") 
-        frac_graph = denominator + pynutil.delete(" ") + pynutil.insert("分之") + numerator
-        frac_graph = self.delete_tokens(frac_graph)
-        self.fst = frac_graph.optimize()
+        graph = denominator + pynutil.delete(" ") + pynutil.insert("分之") + numerator
+
+        self.fst = self.delete_tokens(graph).optimize()

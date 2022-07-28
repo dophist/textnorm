@@ -7,8 +7,9 @@ class MoneyFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)   
+
         cur = pynutil.delete("cur: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
-        number = pynutil.delete("num: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + " "
-        money_graph = number + cur
-        money_graph = self.delete_tokens(money_graph)
-        self.fst = money_graph.optimize()
+        num = pynutil.delete("num: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + " "
+        graph = num + cur
+
+        self.fst = self.delete_tokens(graph).optimize()
