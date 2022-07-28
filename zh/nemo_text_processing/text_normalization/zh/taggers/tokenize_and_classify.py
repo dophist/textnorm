@@ -11,6 +11,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
     NEMO_DIGIT,
     NEMO_CHAR
 )
+from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessorFst
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
 from nemo_text_processing.text_normalization.zh.taggers.char import CharFst
@@ -20,8 +21,7 @@ from nemo_text_processing.text_normalization.zh.taggers.math import MathSymbolFs
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.taggers.erhua_removal import ErhuaRemovalFst
-from nemo_text_processing.text_normalization.zh.taggers.halfwidth import HalfwidthFst
+from nemo_text_processing.text_normalization.zh.taggers.erhua_whitelist import ErhuaWhitelistFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhitelistFst
 from pynini.lib import pynutil
 
@@ -67,6 +67,7 @@ class ClassifyFst(GraphFst):
             # logging.info(f"Creating ClassifyFst grammars.")
 
             start_time = time.time()
+
             date = DateFst(deterministic=deterministic)
             date_graph = date.fst
 
@@ -91,36 +92,33 @@ class ClassifyFst(GraphFst):
             measure = MeasureFst(deterministic=deterministic)
             measure_graph = measure.fst
 
-            Time = TimeFst(deterministic=deterministic)
-            time_graph = Time.fst
+            time_tn = TimeFst(deterministic=deterministic)
+            time_graph = time_tn.fst
 
-            erhua = ErhuaRemovalFst(deterministic=deterministic)
-            erhua_graph = erhua.fst
-
-            halfwidth = HalfwidthFst(deterministic=deterministic)
-            halfwidth_graph = halfwidth.fst
+            erhua_whitelist = ErhuaWhitelistFst(deterministic=deterministic)
+            erhua_whitelist_graph = erhua_whitelist.fst
 
             whitelist = WhitelistFst(deterministic=deterministic)
             whitelist_graph = whitelist.fst
 
-            preprocess = char.char_removal|halfwidth.graph_halfwidth
-            preprocess_graph = pynini.cdrewrite(preprocess.optimize(),"","",NEMO_SIGMA)
-            
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
             classify = (
-                pynutil.add_weight(date_graph,        0.4) |
-                pynutil.add_weight(fraction_graph,    0.5) |
-                pynutil.add_weight(percent_graph,     0.5) |
-                pynutil.add_weight(money_graph,       0.5) |
-                pynutil.add_weight(measure_graph,     0.5) |
-                pynutil.add_weight(time_graph,        0.5) |
-                pynutil.add_weight(whitelist_graph,   0.3) |
-                pynutil.add_weight(number_graph,      1.2) |
-                pynutil.add_weight(math_symbol_graph, 1.5) |
-                pynutil.add_weight(erhua_graph,       2.0) |
-                pynutil.add_weight(char_graph,        200)
+                pynutil.add_weight(date_graph,            0.4) |
+                pynutil.add_weight(fraction_graph,        0.5) |
+                pynutil.add_weight(percent_graph,         0.5) |
+                pynutil.add_weight(money_graph,           0.5) |
+                pynutil.add_weight(measure_graph,         0.5) |
+                pynutil.add_weight(time_graph,            0.5) |
+                pynutil.add_weight(whitelist_graph,       0.3) |
+                pynutil.add_weight(number_graph,          1.2) |
+                pynutil.add_weight(math_symbol_graph,     1.5) |
+                pynutil.add_weight(erhua_whitelist_graph, 2.0) |
+                pynutil.add_weight(char_graph,            200)
             )
-            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
+            token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
+
             graph = token
             graph = pynini.cdrewrite(graph.optimize(),"","",NEMO_SIGMA)
-            self.fst = pynini.compose(preprocess_graph, graph)
+
+            preprocessor = PreProcessorFst()
+            self.fst = preprocessor.fst @ graph

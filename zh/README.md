@@ -1,5 +1,23 @@
 # Chinese Text Normalization
-## 1. Supported Normalizations
+
+## 1. Pre-Processing
+### Char Width Conversion (全角 -> 半角)
+```
+苹果ＣＥＯ宣布发布新ＩＰＨＯＮＥ -> 苹果CEO宣布发布新IPHONE
+他说：“我们已经吃过了！”。 -> 他说:"我们已经吃过了!".
+```
+* covers English letters, digits, punctuations and some symbols
+* the complete mapping table `data/char/fullwidth_to_halfwidth.tsv`
+
+### Blacklist Removal
+Sometime you may want to remove certain things like interjections/fillers "啊", "呃" etc
+```
+呃这个呃啊我不知道 -> 这个我不知道
+```
+* customizable via `data/blacklist/interjections.tsv`
+
+
+## 2. Non-Standard-Words(NSW) normalization
 ### Numbers
 ```
 共465篇，约315万字 -> 共四百六十五篇，约三百一十五万字
@@ -65,8 +83,16 @@
 可以拨打12306来咨询 -> 可以拨打一二三零六来咨询
 ```
 
+### Erhua(儿化音) Removal
+```
+这儿有只鸟儿 -> 这有只鸟
+这事儿好办 -> 这事好办
+我儿子喜欢这地儿 -> 我儿子喜欢这地
+```
+* whitelist is customizable via `data/erhua/whitelist.tsv`
 
-### Whitelist
+
+### Whitelist Replacement
 a set of user-defined hard mapping, i.e. exact-string matching & replacement
 ```
 CEO -> C E O
@@ -76,38 +102,22 @@ B2B -> B to B
 ```
 * customizable via `data/whitelist/default.tsv`
 
-### Char Width Conversion (全角 -> 半角)
-```
-苹果ＣＥＯ宣布发布新ＩＰＨＯＮＥ -> 苹果CEO宣布发布新IPHONE
-他说：“我们已经吃过了！”。 -> 他说:"我们已经吃过了!".
-```
-* covers English letters, digits, punctuations and some symbols
-* the complete mapping table `data/char/fullwidth_to_halfwidth.tsv`
 
-### Char Removal
-Sometime you may want to remove certain chars like interjections/fillers "啊", "呃" etc
-```
-呃这个呃啊我不知道 -> 这个我不知道
-```
-* customizable via `data/char/removal.tsv`
+## 3. Post-Processing
+### Punctuation Removal
+Postprocessor can be configured to remove remaining punctuations after TN
 
-### Erhua(儿化音) Removal
-```
-这儿有只鸟儿 -> 这有只鸟
-这事儿好办 -> 这事好办
-我儿子喜欢这地儿 -> 我儿子喜欢这地
-```
-* customizable via `data/char/erhua_removal_whitelist.tsv` to avoid unwanted removals.
+### Uppercase or Lowercase unification
+Postprocessor can be configured to convert all English letters to uppercases / lowercases
 
-### Invalid Char Tagger
-_**If enabled**_, non-standard chars(out of charset) will be tagged with '<>'
+### Out-Of-Vocabulary(OOV) Tagger
+By default, remaining OOVs will be tagged with `<oov> & </oov>`
 ```
-我们안녕 -> 我们<안><녕>
-雪の花 -> 雪<の>花
+我们안녕 -> 我们<oov>안</oov><oov>녕</oov>
+雪の花 -> 雪<oov>の</oov>花
 ```
-* invalid char tagger is switched off by default
 * default charset (national standard) [通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
-* you can extend legit chars via `data/char/charset_extension.tsv`
+* you can extend legitimate chars via `data/char/charset_extension.tsv`
 
 ## How To Use
 * python normalize.py --text "your text"
