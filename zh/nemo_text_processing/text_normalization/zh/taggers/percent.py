@@ -9,7 +9,11 @@ class PercentFst(GraphFst):
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="percent", kind="classify", deterministic=deterministic)        
         
-        percent_graph = pynutil.insert("percent: \"") + NumberFst().graph_number + \
-                        pynutil.delete("%") + pynutil.insert("\"") 
+        percent_graph = (
+            pynutil.insert("percent: \"") 
+            + NumberFst().graph_number
+            + pynutil.delete("%") 
+            + pynutil.insert("\"") 
+        )
         percent_graph = self.add_tokens(percent_graph)
         self.fst = percent_graph.optimize()

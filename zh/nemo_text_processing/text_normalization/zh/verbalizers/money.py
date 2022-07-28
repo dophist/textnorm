@@ -9,6 +9,6 @@ class MoneyFst(GraphFst):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)   
         cur = pynutil.delete("cur: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
         number = pynutil.delete("num: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"") + " "
-        final_graph = number + cur
-        final_graph = self.delete_tokens(final_graph)
-        self.fst = final_graph.optimize()
+        money_graph = number + cur
+        money_graph = self.delete_tokens(money_graph)
+        self.fst = money_graph.optimize()

@@ -7,6 +7,10 @@ class NumberFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="number", kind="verbalize", deterministic=deterministic)
-        number_graph = pynutil.delete('number: \"') + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete('\"') 
+        number_graph = (
+            pynutil.delete('number: \"') 
+            + pynini.closure(NEMO_NOT_QUOTE) 
+            + pynutil.delete('\"') 
+        )
         delete_tokens = self.delete_tokens(number_graph)
         self.fst = delete_tokens.optimize()

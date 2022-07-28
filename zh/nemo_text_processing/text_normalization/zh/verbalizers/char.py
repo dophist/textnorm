@@ -16,7 +16,13 @@ class CharFst(GraphFst):
             line = f.readline()
             ltag = line[0]
             rtag = line[2]
-        char_other = pynutil.delete("other: \"") + pynutil.insert(ltag) + NEMO_CHAR  + pynutil.insert(rtag) + pynutil.delete("\"") 
+        char_other = (
+            pynutil.delete("other: \"") 
+            + pynutil.insert(ltag) 
+            + NEMO_CHAR  
+            + pynutil.insert(rtag) 
+            + pynutil.delete("\"")
+        ) 
         char|=er
         char|=char_other
         char = self.delete_tokens(char)

@@ -8,7 +8,13 @@ class MathSymbolFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="sign", kind="classify", deterministic=deterministic)
-        sign_graph = pynini.string_file(get_abs_path("data/math/symbol.tsv"))
-        sign_graph = pynutil.insert("sign: \"") + sign_graph + pynutil.insert("\"")
+        sign = pynini.string_file(get_abs_path("data/math/symbol.tsv"))
+        #add your sign in data/math/symbol.tsv,this graph just convert sigh to character,you can add more 
+        #cases with detailed cases 
+        sign_graph = (
+            pynutil.insert("sign: \"") 
+            + sign 
+            + pynutil.insert("\"")
+        )
         sign_graph = self.add_tokens(sign_graph)
         self.fst = sign_graph.optimize()

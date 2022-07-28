@@ -7,7 +7,9 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
     GraphFst,
     delete_extra_space,
     delete_space,
-    NEMO_SIGMA
+    NEMO_SIGMA,
+    NEMO_DIGIT,
+    NEMO_CHAR
 )
 from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
 from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
@@ -103,6 +105,7 @@ class ClassifyFst(GraphFst):
 
             preprocess = char.char_removal|halfwidth.graph_halfwidth
             preprocess_graph = pynini.cdrewrite(preprocess.optimize(),"","",NEMO_SIGMA)
+            
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
             classify = (
                 pynutil.add_weight(date_graph,        0.4) |
@@ -117,7 +120,6 @@ class ClassifyFst(GraphFst):
                 pynutil.add_weight(erhua_graph,       2.0) |
                 pynutil.add_weight(char_graph,        200)
             )
-
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" }")
             graph = token
             graph = pynini.cdrewrite(graph.optimize(),"","",NEMO_SIGMA)

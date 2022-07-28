@@ -13,7 +13,6 @@ class MeasureFst(GraphFst):
 
         units_en = pynini.string_file(get_abs_path("data/measure/units_en.tsv"))
         units_zh = pynini.string_file(get_abs_path("data/measure/units_zh.tsv"))
-
         graph_measure = self.add_tokens(
             pynutil.insert("measure: \"") + NumberFst().graph_number + delete_space + (units_en | units_zh) + pynutil.insert("\"")
         )

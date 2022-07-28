@@ -7,6 +7,10 @@ class WhitelistFst(GraphFst):
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="whitelist", kind="verbalize", deterministic=deterministic)
-        white = pynutil.delete("whitelist: \"") + pynini.closure(NEMO_NOT_QUOTE) + pynutil.delete("\"")
+        white = (
+            pynutil.delete("whitelist: \"") 
+            + pynini.closure(NEMO_NOT_QUOTE) 
+            + pynutil.delete("\"")
+        )
         white = self.delete_tokens(white)
         self.fst = white.optimize()

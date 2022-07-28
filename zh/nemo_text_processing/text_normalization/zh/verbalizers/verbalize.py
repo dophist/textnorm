@@ -53,8 +53,7 @@ class VerbalizeFst(GraphFst):
 
         erhua = ErhuaRemovalFst(deterministic=deterministic)
         erhua_graph = erhua.fst
-
-        
+       
         whitelist = WhitelistFst(deterministic=deterministic)
         whitelist_graph = whitelist.fst
         graph = ( 
