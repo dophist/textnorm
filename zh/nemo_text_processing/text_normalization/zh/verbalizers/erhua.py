@@ -4,7 +4,8 @@ from pynini.lib import pynutil
 
 class ErhuaFst(GraphFst):
     '''
-        儿女
+        char { "char" : "这" } erhua { positive: "儿" } -> 这
+        erhua { negative: "儿女" } -> 儿女
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="erhua", kind="verbalize", deterministic=deterministic)

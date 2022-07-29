@@ -5,7 +5,7 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path,load_l
 
 class ErhuaFst(GraphFst):
     '''
-        这儿 -> erhua { positive: "这儿" }
+        这儿 -> char { "char" : "这" } } erhua { positive: "儿" }
         儿女 -> erhua { negative: "儿女" }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
