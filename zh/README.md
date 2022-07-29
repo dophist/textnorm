@@ -105,19 +105,19 @@ B2B -> B to B
 
 ## 3. Post-Processing
 ### Punctuation Removal
-Postprocessor can be configured to remove remaining punctuations after TN
+If enabled, punctuations are removed.
 
 ### Uppercase or Lowercase unification
-Postprocessor can be configured to convert all English letters to uppercases / lowercases
+If enabled, English letters are converted to uppercases / lowercases
 
 ### Out-Of-Vocabulary(OOV) Tagger
-By default, remaining OOVs will be tagged with `<oov> & </oov>`
+If enabled, OOV chars are tagged with `<oov>` and `</oov>`, e.g.:
 ```
 我们안녕 -> 我们<oov>안</oov><oov>녕</oov>
 雪の花 -> 雪<oov>の</oov>花
 ```
 * default charset (national standard) [通用规范汉字表](https://zh.wikipedia.org/wiki/通用规范汉字表)
-* you can extend legitimate chars via `data/char/charset_extension.tsv`
+* you can extend charset via `data/char/charset_extension.tsv`
 
 ## How To Use
 * python normalize.py --text "your text"

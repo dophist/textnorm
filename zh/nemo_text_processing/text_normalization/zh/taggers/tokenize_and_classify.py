@@ -21,7 +21,7 @@ from nemo_text_processing.text_normalization.zh.taggers.math import MathSymbolFs
 from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.taggers.erhua_whitelist import ErhuaWhitelistFst
+from nemo_text_processing.text_normalization.zh.taggers.erhua import ErhuaFst
 from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhitelistFst
 from pynini.lib import pynutil
 
@@ -95,25 +95,25 @@ class ClassifyFst(GraphFst):
             time_tn = TimeFst(deterministic=deterministic)
             time_graph = time_tn.fst
 
-            erhua_whitelist = ErhuaWhitelistFst(deterministic=deterministic)
-            erhua_whitelist_graph = erhua_whitelist.fst
+            erhua = ErhuaFst(deterministic=deterministic)
+            erhua_graph = erhua.fst
 
             whitelist = WhitelistFst(deterministic=deterministic)
             whitelist_graph = whitelist.fst
 
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
             classify = (
-                pynutil.add_weight(date_graph,            0.4) |
-                pynutil.add_weight(fraction_graph,        0.5) |
-                pynutil.add_weight(percent_graph,         0.5) |
-                pynutil.add_weight(money_graph,           0.5) |
-                pynutil.add_weight(measure_graph,         0.5) |
-                pynutil.add_weight(time_graph,            0.5) |
-                pynutil.add_weight(whitelist_graph,       0.3) |
-                pynutil.add_weight(number_graph,          1.2) |
-                pynutil.add_weight(math_symbol_graph,     1.5) |
-                pynutil.add_weight(erhua_whitelist_graph, 2.0) |
-                pynutil.add_weight(char_graph,            200)
+                pynutil.add_weight(date_graph,        0.4) |
+                pynutil.add_weight(fraction_graph,    0.5) |
+                pynutil.add_weight(percent_graph,     0.5) |
+                pynutil.add_weight(money_graph,       0.5) |
+                pynutil.add_weight(measure_graph,     0.5) |
+                pynutil.add_weight(time_graph,        0.5) |
+                pynutil.add_weight(whitelist_graph,   0.3) |
+                pynutil.add_weight(number_graph,      1.2) |
+                pynutil.add_weight(math_symbol_graph, 1.5) |
+                pynutil.add_weight(erhua_graph,       2.0) |
+                pynutil.add_weight(char_graph,        200)
             )
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
 

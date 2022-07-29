@@ -3,18 +3,20 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, G
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path,load_labels
 
-class ErhuaWhitelistFst(GraphFst):
+class ErhuaFst(GraphFst):
     '''
-        女儿  ->  erhua { whitelist: "女儿" }
+        这儿 -> erhua { positive: "这儿" }
+        儿女 -> erhua { negative: "儿女" }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="erhua", kind="classify", deterministic=deterministic)
 
-        whitelist = pynini.string_file(get_abs_path("data/erhua/whitelist.tsv"))
-        graph = (
-            pynutil.insert("whitelist: \"") 
-            + whitelist 
-            + pynutil.insert("\"")
+        positive = pynutil.insert("positive: \"") + '儿' + pynutil.insert("\"")
+        negative = (
+            pynutil.insert("negative: \"") +
+            pynini.string_file(get_abs_path("data/erhua/negative.tsv")) +
+            pynutil.insert("\"")
         )
+        graph = pynutil.add_weight(positive, 0.1) | negative
 
         self.fst = self.add_tokens(graph).optimize()

@@ -9,7 +9,7 @@ from nemo_text_processing.text_normalization.zh.verbalizers.math import MathSymb
 from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
 from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
 from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.verbalizers.erhua_whitelist import ErhuaWhitelistFst
+from nemo_text_processing.text_normalization.zh.verbalizers.erhua import ErhuaFst
 from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import WhitelistFst
 
 class VerbalizeFst(GraphFst):
@@ -52,24 +52,24 @@ class VerbalizeFst(GraphFst):
         time = TimeFst(deterministic=deterministic)
         time_graph = time.fst
 
-        erhua_whitelist = ErhuaWhitelistFst(deterministic=deterministic)
-        erhua_whitelist_graph = erhua_whitelist.fst
+        erhua = ErhuaFst(deterministic=deterministic)
+        erhua_graph = erhua.fst
        
         whitelist = WhitelistFst(deterministic=deterministic)
         whitelist_graph = whitelist.fst
 
         graph = ( 
-        	date_graph
-            | number_graph
-            | fraction_graph
-            | char_graph
-            | math_symbol_graph
-            | percent_graph
-            | money_graph
-            | measure_graph
-            | time_graph
-            | erhua_whitelist_graph
-            | whitelist_graph
+        	date_graph |
+            number_graph |
+            fraction_graph |
+            char_graph |
+            math_symbol_graph |
+            percent_graph |
+            money_graph |
+            measure_graph |
+            time_graph |
+            erhua_graph |
+            whitelist_graph
         )
 
         self.fst = graph.optimize()

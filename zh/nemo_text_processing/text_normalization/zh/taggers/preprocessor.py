@@ -5,19 +5,26 @@ from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
 class PreProcessorFst(GraphFst):
     '''
-        Preprocessing of TN, now contains:
+        Preprocessing of TN:
             1. interjections removal such as '啊, 呃'
             2. fullwidth -> halfwidth char conversion
     '''
-    def __init__(self):
+    def __init__(self,
+        remove_interjections: bool = True,
+        fullwidth_to_halfwidth: bool = True,
+    ):
         super().__init__(name="PreProcessor", kind="processor")  
 
-        remove_interjections = pynutil.delete(
-            pynini.string_file(get_abs_path('data/blacklist/interjections.tsv'))
-        )
-        fullwidth_to_halfwidth = pynini.string_file(get_abs_path('data/char/fullwidth_to_halfwidth.tsv'))
+        graph = pynini.cdrewrite('', '', '', NEMO_SIGMA)
 
-        graph = remove_interjections | fullwidth_to_halfwidth 
+        if remove_interjections:
+            remove_interjections_graph = pynutil.delete(
+                pynini.string_file(get_abs_path('data/blacklist/interjections.tsv'))
+            )
+            graph @= pynini.cdrewrite(remove_interjections_graph, '', '', NEMO_SIGMA)
 
-        self.fst = pynini.cdrewrite(graph, "", "", NEMO_SIGMA).optimize()
+        if fullwidth_to_halfwidth:
+            fullwidth_to_halfwidth_graph = pynini.string_file(get_abs_path('data/char/fullwidth_to_halfwidth.tsv'))
+            graph @= pynini.cdrewrite(fullwidth_to_halfwidth_graph, '', '', NEMO_SIGMA)
 
+        self.fst = graph.optimize()
