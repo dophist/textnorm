@@ -1,4 +1,5 @@
 # Chinese Text Normalization
+There are 3 components in entire TN pipeline: pre-processing, non-standard word normalization, post-processing
 
 ## 1. Pre-Processing
 ### Char Width Conversion (全角 -> 半角)
