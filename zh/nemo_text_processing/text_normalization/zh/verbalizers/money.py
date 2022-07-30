@@ -1,7 +1,8 @@
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst,NEMO_NOT_QUOTE
 from pynini.lib import pynutil
-class MoneyFst(GraphFst):
+
+class Money(GraphFst):
     '''
         money { num: "一点五" cur: "元" }  ->  一点五元
     '''

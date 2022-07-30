@@ -1,16 +1,19 @@
 from turtle import pos
+
+import pynini
+
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
-from nemo_text_processing.text_normalization.zh.verbalizers.date import DateFst
-from nemo_text_processing.text_normalization.zh.verbalizers.number import NumberFst
-from nemo_text_processing.text_normalization.zh.verbalizers.char import CharFst
-from nemo_text_processing.text_normalization.zh.verbalizers.fraction import FractionFst
-from nemo_text_processing.text_normalization.zh.verbalizers.percent import PercentFst
-from nemo_text_processing.text_normalization.zh.verbalizers.math import MathSymbolFst
-from nemo_text_processing.text_normalization.zh.verbalizers.money import MoneyFst
-from nemo_text_processing.text_normalization.zh.verbalizers.measure import MeasureFst
-from nemo_text_processing.text_normalization.zh.verbalizers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.verbalizers.erhua import ErhuaFst
-from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import WhitelistFst
+from nemo_text_processing.text_normalization.zh.verbalizers.date import Date
+from nemo_text_processing.text_normalization.zh.verbalizers.number import Number
+from nemo_text_processing.text_normalization.zh.verbalizers.char import Char
+from nemo_text_processing.text_normalization.zh.verbalizers.fraction import Fraction
+from nemo_text_processing.text_normalization.zh.verbalizers.percent import Percent
+from nemo_text_processing.text_normalization.zh.verbalizers.math_symbol import MathSymbol
+from nemo_text_processing.text_normalization.zh.verbalizers.money import Money
+from nemo_text_processing.text_normalization.zh.verbalizers.measure import Measure
+from nemo_text_processing.text_normalization.zh.verbalizers.clock import Clock
+from nemo_text_processing.text_normalization.zh.verbalizers.erhua import Erhua
+from nemo_text_processing.text_normalization.zh.verbalizers.whitelist import Whitelist
 
 class VerbalizeFst(GraphFst):
     """
@@ -25,51 +28,30 @@ class VerbalizeFst(GraphFst):
     def __init__(self, deterministic: bool = True):
         super().__init__(name="verbalize", kind="verbalize", deterministic=deterministic)
 
-        date = DateFst(deterministic=deterministic)
-        date_graph = date.fst
+        date = Date(deterministic=deterministic)
+        number = Number(deterministic=deterministic)
+        char = Char(deterministic=deterministic)
+        fraction = Fraction(deterministic=deterministic)
+        percent = Percent(deterministic=deterministic)
+        math_symbol = MathSymbol(deterministic=deterministic)
+        money = Money(deterministic=deterministic)
+        measure = Measure(deterministic=deterministic)
+        clock = Clock(deterministic=deterministic)
+        erhua = Erhua(deterministic=deterministic)
+        whitelist = Whitelist(deterministic=deterministic)
 
-        number = NumberFst(deterministic=deterministic)
-        number_graph = number.fst
-        
-        char = CharFst(deterministic=deterministic)
-        char_graph = char.fst
-
-        fraction = FractionFst(deterministic=deterministic)
-        fraction_graph = fraction.fst
-
-        percent = PercentFst(deterministic=deterministic)
-        percent_graph = percent.fst
-
-        math_symbol = MathSymbolFst(deterministic=deterministic)
-        math_symbol_graph = math_symbol.fst
-
-        money = MoneyFst(deterministic=deterministic)
-        money_graph = money.fst
-
-        measure = MeasureFst(deterministic=deterministic)
-        measure_graph = measure.fst
-
-        time = TimeFst(deterministic=deterministic)
-        time_graph = time.fst
-
-        erhua = ErhuaFst(deterministic=deterministic)
-        erhua_graph = erhua.fst
-       
-        whitelist = WhitelistFst(deterministic=deterministic)
-        whitelist_graph = whitelist.fst
-
-        graph = ( 
-        	date_graph |
-            number_graph |
-            fraction_graph |
-            char_graph |
-            math_symbol_graph |
-            percent_graph |
-            money_graph |
-            measure_graph |
-            time_graph |
-            erhua_graph |
-            whitelist_graph
+        graph = pynini.union(
+        	date.fst,
+            number.fst,
+            fraction.fst,
+            char.fst,
+            math_symbol.fst,
+            percent.fst,
+            money.fst,
+            measure.fst,
+            clock.fst,
+            erhua.fst,
+            whitelist.fst,
         )
 
         self.fst = graph.optimize()

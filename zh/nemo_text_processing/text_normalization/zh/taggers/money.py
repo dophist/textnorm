@@ -1,10 +1,10 @@
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst, insert_space,NEMO_DIGIT
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
-from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
+from nemo_text_processing.text_normalization.zh.taggers.number import Number
 from pynini.lib import pynutil
 
-class MoneyFst(GraphFst):
+class Money(GraphFst):
     '''
         ￥1.25 -> money { cur: "元" num: "一点五" }
     '''
@@ -15,7 +15,7 @@ class MoneyFst(GraphFst):
         graph = (
             pynutil.insert("cur: \"") + currency + pynutil.insert("\"") +
             insert_space +
-            pynutil.insert("num: \"") + NumberFst().graph_number + pynutil.insert("\"")
+            pynutil.insert("num: \"") + Number().graph_number + pynutil.insert("\"")
         )
 
         self.fst = self.add_tokens(graph).optimize()

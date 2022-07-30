@@ -2,9 +2,10 @@ import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
-class WhitelistFst(GraphFst):
+
+class Whitelist(GraphFst):
     '''
-        CEO  -> whitelist { whitelist: "CEO" } 
+        CEO  -> tokens { whitelist: "CEO" } 
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)
@@ -17,4 +18,4 @@ class WhitelistFst(GraphFst):
             + pynutil.insert("\"")
         )
 
-        self.fst = self.add_tokens(graph).optimize()
+        self.fst = graph.optimize()

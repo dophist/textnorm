@@ -3,13 +3,12 @@ from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_CHAR, NE
 from pynini.lib import pynutil
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 
-class CharFst(GraphFst):
+class Char(GraphFst):
     '''
-        char { char: "你" }  -> 你
+        tokens { char: "你" } -> 你
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="char", kind="verbalize", deterministic=deterministic)
 
         graph = pynutil.delete("char: \"") + NEMO_NOT_QUOTE + pynutil.delete("\"")
-
-        self.fst = self.delete_tokens(graph).optimize()
+        self.fst = graph.optimize()

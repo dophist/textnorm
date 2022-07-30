@@ -2,30 +2,24 @@ import os
 import time
 
 import pynini
-from nemo_text_processing.text_normalization.zh.graph_utils import (
-    NEMO_WHITE_SPACE,
-    GraphFst,
-    delete_extra_space,
-    delete_space,
-    NEMO_SIGMA,
-    NEMO_DIGIT,
-    NEMO_CHAR
-)
-from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessorFst
-from nemo_text_processing.text_normalization.zh.taggers.date import DateFst
-from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
-from nemo_text_processing.text_normalization.zh.taggers.char import CharFst
-from nemo_text_processing.text_normalization.zh.taggers.fraction import FractionFst
-from nemo_text_processing.text_normalization.zh.taggers.percent import PercentFst
-from nemo_text_processing.text_normalization.zh.taggers.math import MathSymbolFst
-from nemo_text_processing.text_normalization.zh.taggers.money import MoneyFst
-from nemo_text_processing.text_normalization.zh.taggers.measure import MeasureFst
-from nemo_text_processing.text_normalization.zh.taggers.time import TimeFst
-from nemo_text_processing.text_normalization.zh.taggers.erhua import ErhuaFst
-from nemo_text_processing.text_normalization.zh.taggers.whitelist import WhitelistFst
 from pynini.lib import pynutil
 
 # from nemo.utils import logging
+
+from nemo_text_processing.text_normalization.zh.graph_utils import (GraphFst, NEMO_SIGMA)
+
+from nemo_text_processing.text_normalization.zh.taggers.preprocessor import PreProcessor
+from nemo_text_processing.text_normalization.zh.taggers.date import Date
+from nemo_text_processing.text_normalization.zh.taggers.number import Number
+from nemo_text_processing.text_normalization.zh.taggers.char import Char
+from nemo_text_processing.text_normalization.zh.taggers.fraction import Fraction
+from nemo_text_processing.text_normalization.zh.taggers.percent import Percent
+from nemo_text_processing.text_normalization.zh.taggers.math_symbol import MathSymbol
+from nemo_text_processing.text_normalization.zh.taggers.money import Money
+from nemo_text_processing.text_normalization.zh.taggers.measure import Measure
+from nemo_text_processing.text_normalization.zh.taggers.clock import Clock
+from nemo_text_processing.text_normalization.zh.taggers.erhua import Erhua
+from nemo_text_processing.text_normalization.zh.taggers.whitelist import Whitelist
 
 
 class ClassifyFst(GraphFst):
@@ -68,57 +62,38 @@ class ClassifyFst(GraphFst):
 
             start_time = time.time()
 
-            date = DateFst(deterministic=deterministic)
-            date_graph = date.fst
-
-            number = NumberFst(deterministic=deterministic)
-            number_graph = number.fst
-
-            char = CharFst(deterministic=deterministic)
-            char_graph = char.fst
-
-            fraction = FractionFst(deterministic=deterministic)
-            fraction_graph = fraction.fst
-
-            percent = PercentFst(deterministic=deterministic)
-            percent_graph = percent.fst
-
-            math_symbol = MathSymbolFst(deterministic=deterministic)
-            math_symbol_graph = math_symbol.fst
-
-            money = MoneyFst(deterministic=deterministic)
-            money_graph = money.fst
-
-            measure = MeasureFst(deterministic=deterministic)
-            measure_graph = measure.fst
-
-            time_tn = TimeFst(deterministic=deterministic)
-            time_graph = time_tn.fst
-
-            erhua = ErhuaFst(deterministic=deterministic)
-            erhua_graph = erhua.fst
-
-            whitelist = WhitelistFst(deterministic=deterministic)
-            whitelist_graph = whitelist.fst
+            date = Date(deterministic=deterministic)
+            number = Number(deterministic=deterministic)
+            char = Char(deterministic=deterministic)
+            fraction = Fraction(deterministic=deterministic)
+            percent = Percent(deterministic=deterministic)
+            math_symbol = MathSymbol(deterministic=deterministic)
+            money = Money(deterministic=deterministic)
+            measure = Measure(deterministic=deterministic)
+            clock = Clock(deterministic=deterministic)
+            erhua = Erhua(deterministic=deterministic)
+            whitelist = Whitelist(deterministic=deterministic)
 
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
             classify = (
-                pynutil.add_weight(date_graph,        0.4) |
-                pynutil.add_weight(fraction_graph,    0.5) |
-                pynutil.add_weight(percent_graph,     0.5) |
-                pynutil.add_weight(money_graph,       0.5) |
-                pynutil.add_weight(measure_graph,     0.5) |
-                pynutil.add_weight(time_graph,        0.5) |
-                pynutil.add_weight(whitelist_graph,   0.3) |
-                pynutil.add_weight(number_graph,      1.2) |
-                pynutil.add_weight(math_symbol_graph, 1.5) |
-                pynutil.add_weight(erhua_graph,       2.0) |
-                pynutil.add_weight(char_graph,        200)
+                pynutil.add_weight(date.fst,        0.4) |
+                pynutil.add_weight(fraction.fst,    0.5) |
+                pynutil.add_weight(percent.fst,     0.5) |
+                pynutil.add_weight(money.fst,       0.5) |
+                pynutil.add_weight(measure.fst,     0.5) |
+                pynutil.add_weight(clock.fst,       0.5) |
+                pynutil.add_weight(whitelist.fst,   0.3) |
+                pynutil.add_weight(number.fst,      1.2) |
+                pynutil.add_weight(math_symbol.fst, 1.5) |
+                pynutil.add_weight(erhua.fst,       2.0) |
+                pynutil.add_weight(char.fst,        200)
             )
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
 
-            graph = token
-            graph = pynini.cdrewrite(graph.optimize(),"","",NEMO_SIGMA)
+            tagger = pynini.cdrewrite(token.optimize(),"","",NEMO_SIGMA).optimize()
 
-            preprocessor = PreProcessorFst()
-            self.fst = preprocessor.fst @ graph
+            preprocessor = PreProcessor(
+                remove_interjections = True,
+                fullwidth_to_halfwidth = True, 
+            )
+            self.fst = preprocessor.fst @ tagger

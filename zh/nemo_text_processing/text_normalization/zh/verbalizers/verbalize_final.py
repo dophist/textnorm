@@ -11,7 +11,7 @@ from nemo_text_processing.text_normalization.zh.graph_utils import (
 )
 
 from nemo_text_processing.text_normalization.zh.verbalizers.verbalize import VerbalizeFst
-from nemo_text_processing.text_normalization.zh.verbalizers.postprocessor import PostProcessorFst
+from nemo_text_processing.text_normalization.zh.verbalizers.postprocessor import PostProcessor
 
 # from nemo.utils import logging
 
@@ -37,5 +37,10 @@ class VerbalizeFinalFst(GraphFst):
         )
         graph = delete_space + pynini.closure(graph + delete_space) + graph + delete_space
 
-        postprocessor = PostProcessorFst()
+        postprocessor = PostProcessor(
+            remove_puncts = False,
+            to_upper = False,
+            to_lower = False,
+            tag_oov = True,
+        )
         self.fst = (graph @ postprocessor.fst).optimize()

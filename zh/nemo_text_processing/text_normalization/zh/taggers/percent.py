@@ -1,9 +1,9 @@
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst,insert_space,NEMO_DIGIT,NEMO_NOT_QUOTE
-from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
+from nemo_text_processing.text_normalization.zh.taggers.number import Number
 from pynini.lib import pynutil
 
-class PercentFst(GraphFst):
+class Percent(GraphFst):
     '''
         1.5%  -> percent { percent: "一点五" }      
     '''
@@ -12,9 +12,9 @@ class PercentFst(GraphFst):
         
         percent_graph = (
             pynutil.insert("percent: \"") 
-            + NumberFst().graph_number
+            + Number().graph_number
             + pynutil.delete("%") 
             + pynutil.insert("\"") 
         )
 
-        self.fst = self.add_tokens(percent_graph).optimize()
+        self.fst = percent_graph.optimize()

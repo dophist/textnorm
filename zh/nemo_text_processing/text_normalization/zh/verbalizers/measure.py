@@ -2,7 +2,8 @@ import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA, GraphFst, NEMO_NOT_QUOTE
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
-class MeasureFst(GraphFst):
+
+class Measure(GraphFst):
     '''
         measure { measure: "一千克" }  ->  一千克
     '''

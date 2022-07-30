@@ -11,7 +11,7 @@ from nemo_text_processing.text_normalization.zh.utils import (
 )
 from pynini.lib import pynutil
 
-class NumberFst(GraphFst):
+class Number(GraphFst):
     '''
         self.graph_number:
         5       -> number { number: "五"}

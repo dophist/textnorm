@@ -1,9 +1,10 @@
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst,insert_space,NEMO_DIGIT,NEMO_CHAR
 from pynini.lib import pynutil
-class FractionFst(GraphFst):
+
+class Fraction(GraphFst):
     '''
-        1/5  -> fraction { numerator: "1" denominator: "5" }      
+        1/5  -> tokens { fraction { numerator: "1" denominator: "5" } }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="fraction", kind="classify", deterministic=deterministic)

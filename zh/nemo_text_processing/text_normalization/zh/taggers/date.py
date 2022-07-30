@@ -2,7 +2,8 @@ import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_CHAR, GraphFst, insert_space,NEMO_DIGIT,NEMO_SIGMA
 from nemo_text_processing.text_normalization.zh.utils import get_abs_path
 from pynini.lib import pynutil
-class DateFst(GraphFst):
+
+class Date(GraphFst):
     '''
         2002年       ->  date { year: "2002" } 
         2002-01-28   ->  date { year: "2002" month: "01" day: "28"}

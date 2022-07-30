@@ -1,10 +1,11 @@
 import pynini
 from nemo_text_processing.text_normalization.zh.graph_utils import GraphFst,insert_space,NEMO_DIGIT,NEMO_NOT_QUOTE
-from nemo_text_processing.text_normalization.zh.taggers.number import NumberFst
+from nemo_text_processing.text_normalization.zh.taggers.number import Number
 from pynini.lib import pynutil
-class PercentFst(GraphFst):
+
+class Percent(GraphFst):
     '''
-        percent { percent: "一点五" }  ->  百分之一点五
+        tokens { percent: "一点五" }  ->  百分之一点五
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="percent", kind="verbalize", deterministic=deterministic)   
@@ -16,4 +17,4 @@ class PercentFst(GraphFst):
             pynutil.delete("\"")
         )
 
-        self.fst = self.delete_tokens(graph).optimize()
+        self.fst = graph.optimize()
