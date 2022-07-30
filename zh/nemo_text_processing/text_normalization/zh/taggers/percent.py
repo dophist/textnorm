@@ -5,7 +5,7 @@ from pynini.lib import pynutil
 
 class Percent(GraphFst):
     '''
-        1.5%  -> percent { percent: "一点五" }      
+        1.5%  -> tokens { { percent: "一点五" } }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="percent", kind="classify", deterministic=deterministic)        

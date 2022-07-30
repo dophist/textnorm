@@ -5,7 +5,7 @@ from pynini.lib import pynutil
 
 class Whitelist(GraphFst):
     '''
-        CEO  -> tokens { whitelist: "CEO" } 
+        ATM  -> tokens { whitelist: "ATM" } 
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="whitelist", kind="classify", deterministic=deterministic)

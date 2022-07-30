@@ -6,7 +6,7 @@ from pynini.lib import pynutil
 
 class Money(GraphFst):
     '''
-        ￥1.25 -> money { cur: "元" num: "一点五" }
+        ￥1.25 -> tokens { money { cur: "元" num: "一点五" } }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="money", kind="classify", deterministic=deterministic)

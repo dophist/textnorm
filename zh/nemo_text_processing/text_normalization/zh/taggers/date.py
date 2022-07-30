@@ -5,12 +5,12 @@ from pynini.lib import pynutil
 
 class Date(GraphFst):
     '''
-        2002年       ->  date { year: "2002" } 
-        2002-01-28   ->  date { year: "2002" month: "01" day: "28"}
-        2002/01/28   ->  date { year: "2002" month: "01" day: "28"}
-        2002.01.28   ->  date { year: "2002" month: "01" day: "28"}
-        2002/02      ->  date { year: "2002" month "02"}
-        02/11        ->  date { year: "02" month "11"}  different with case "fraction 2/11"
+        2002年       -> tokens { date { year: "2002" } }
+        2002-01-28   -> tokens { date { year: "2002" month: "01" day: "28"} }
+        2002/01/28   -> tokens { date { year: "2002" month: "01" day: "28"} }
+        2002.01.28   -> tokens { date { year: "2002" month: "01" day: "28"} }
+        2002/02      -> tokens { date { year: "2002" month "02"} }
+        02/11        -> tokens { date { year: "02" month "11"} } different with case "fraction 2/11"
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="date", kind="classify", deterministic=deterministic)

@@ -4,7 +4,7 @@ from pynini.lib import pynutil
 
 class Money(GraphFst):
     '''
-        money { num: "一点五" cur: "元" }  ->  一点五元
+        tokens { money { num: "一点五" cur: "元" } } ->  一点五元
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="money", kind="verbalize", deterministic=deterministic)   

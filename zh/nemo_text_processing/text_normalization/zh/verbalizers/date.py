@@ -5,8 +5,8 @@ from pynini.lib import pynutil
 
 class Date(GraphFst):
     '''
-        date { year: "2002" month: "01" day: "28"}  ->  二零零二年一月二十八日
-        date { year: "2002" }                       ->  二零零八年
+        tokens { date { year: "2002" month: "01" day: "28"} }  ->  二零零二年一月二十八日
+        tokens { date { year: "2002" } } ->  二零零八年
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="date", kind="verbalize", deterministic=deterministic)
