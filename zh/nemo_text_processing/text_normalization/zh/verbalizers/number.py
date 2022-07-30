@@ -4,7 +4,7 @@ from pynini.lib import pynutil
 
 class Number(GraphFst):
     '''
-        tokens { number: "一二三"} -> 一二三
+        tokens { number { number: "一二三" } } -> 一二三
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="number", kind="verbalize", deterministic=deterministic)
@@ -15,4 +15,4 @@ class Number(GraphFst):
             + pynutil.delete('\"') 
         )
 
-        self.fst = graph.optimize()
+        self.fst = self.delete_tokens(graph).optimize()

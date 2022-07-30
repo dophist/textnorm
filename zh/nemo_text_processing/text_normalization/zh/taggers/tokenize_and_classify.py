@@ -75,18 +75,18 @@ class ClassifyFst(GraphFst):
             whitelist = Whitelist(deterministic=deterministic)
 
             # logging.debug(f"date: {time.time() - start_time: .2f}s -- {date_graph.num_states()} nodes")
-            classify = (
-                pynutil.add_weight(date.fst,        0.4) |
-                pynutil.add_weight(fraction.fst,    0.5) |
-                pynutil.add_weight(percent.fst,     0.5) |
-                pynutil.add_weight(money.fst,       0.5) |
-                pynutil.add_weight(measure.fst,     0.5) |
-                pynutil.add_weight(clock.fst,       0.5) |
-                pynutil.add_weight(whitelist.fst,   0.3) |
-                pynutil.add_weight(number.fst,      1.2) |
-                pynutil.add_weight(math_symbol.fst, 1.5) |
-                pynutil.add_weight(erhua.fst,       2.0) |
-                pynutil.add_weight(char.fst,        200)
+            classify = pynini.union(
+                pynutil.add_weight(date.fst,        0.4),
+                pynutil.add_weight(fraction.fst,    0.5),
+                pynutil.add_weight(percent.fst,     0.5),
+                pynutil.add_weight(money.fst,       0.5),
+                pynutil.add_weight(measure.fst,     0.5),
+                pynutil.add_weight(clock.fst,       0.5),
+                pynutil.add_weight(whitelist.fst,   0.3),
+                pynutil.add_weight(number.fst,      1.2),
+                pynutil.add_weight(math_symbol.fst, 1.5),
+                pynutil.add_weight(erhua.fst,       2.0),
+                pynutil.add_weight(char.fst,        200),
             )
             token = pynutil.insert("tokens { ") + classify + pynutil.insert(" } ")
 

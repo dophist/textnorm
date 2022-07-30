@@ -5,7 +5,7 @@ from pynini.lib import pynutil
 
 class Measure(GraphFst):
     '''
-        measure { measure: "一千克" }  ->  一千克
+        tokens { measure { measure: "一千克" } } ->  一千克
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="measure", kind="verbalize", deterministic=deterministic)   

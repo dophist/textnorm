@@ -7,7 +7,7 @@ from pynini.lib import pynutil
 
 class Measure(GraphFst):
     '''
-        1kg  -> measure { measure: "一千克" }
+        1kg  -> tokens { measure { measure: "一千克" } }
     '''
     def __init__(self, deterministic: bool = True, lm: bool = False):
         super().__init__(name="measure", kind="classify", deterministic=deterministic)
