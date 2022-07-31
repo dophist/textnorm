@@ -24,7 +24,6 @@ from typing import Dict, List, Union
 import pynini
 from joblib import Parallel, delayed
 from nemo_text_processing.text_normalization.zh.graph_utils import NEMO_SIGMA
-from nemo_text_processing.text_normalization.zh.utils import inverse_chr_sep
 from nemo_text_processing.text_normalization.data_loader_utils import (
     load_file,
     post_process_punct,
@@ -223,8 +222,6 @@ class Normalizer:
         assert (
             len(text.split()) < 500
         ), "Your input is too long. Please split up the input into sentences, or strings with fewer than 500 words"
-        # text = "比分定格在78:96"
-        # text = chr_sep(text)
         original_text = text
         if punct_pre_process:
             text = pre_process(text)
@@ -252,8 +249,6 @@ class Normalizer:
             if verbalizer_lattice is None:
                 raise ValueError(f"No permutations were generated from tokens {s}")
             output += ' ' + self.select_verbalizer(verbalizer_lattice)
-
-        output = inverse_chr_sep(output)
         output = SPACE_DUP.sub(' ', output[1:])
         
         return output
